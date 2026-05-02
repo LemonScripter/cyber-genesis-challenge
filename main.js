@@ -1,7 +1,7 @@
 import VirtualCPU from './bio_kernel_emu/Virtual_CPU.js';
 import CausalityMonitor from './bio_kernel_emu/Causality_Monitor.js';
 import AxiomValidator from './bio_kernel_emu/Axiom_Validator.js';
-import { logAttempt } from './stats_manager.js';
+import { logAttempt, getSecureProof } from './stats_manager.js';
 
 const content = {
     hu: {
@@ -50,7 +50,7 @@ const content = {
         guideS2Title: "2. Known Vulnerabilities",
         guideS2Text1: "Memory Leak: DNA key is at 0xDEADBEEF.",
         guideS2Text2: "Logic Flaw: ExportNote does not verify source.",
-        guideS2Text3: "Integritás: TEXT segment (0x0000-0x0FFF) is read-only.",
+        guideS2Text3: "Integrity: TEXT segment (0x0000-0x0FFF) is read-only.",
         guideS2Text4: "Semantic Corruption: Typed text can be modified before saving.",
         guideS2Text5: "Stealth Malware: Background data exfiltration.",
         guideS2Text6: "Bank Malware: Unauthorized transfers (Carbanak style).",
@@ -108,14 +108,6 @@ let malwareInterval = null;
 let keyloggerInterval = null;
 let carbanakInterval = null;
 let dronePos = { x: 10, y: 10 };
-
-// Cryptographic Verification Logic
-async function generateProofHash(data) {
-    const msgUint8 = new TextEncoder().encode(data + "BIOOS_SECRET_SALT_2026");
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
 
 // Shield Toggle Logic
 shieldToggle.addEventListener('change', (e) => {
@@ -186,7 +178,7 @@ function updateLanguage() {
             <p>${c.winConditionText}</p>
         </div>
         <div class="guide-section">
-             <button onclick="location.href='stats.html'">DICSŐSÉGLISTA / HALL OF FAME</button>
+             <button onclick="window.open('stats.html', '_blank')">DICSŐSÉGLISTA / HALL OF FAME</button>
         </div>
     `;
 }
@@ -228,12 +220,6 @@ sendEmailBtn.addEventListener('click', () => {
     window.location.href = `mailto:admin@metaspace.bio?subject=BioOS%20Challenge%20Feedback&body=${body}`;
     contactModal.classList.add('hidden');
     contactMessage.value = '';
-});
-
-// Closing modals on outside click
-window.addEventListener('click', (e) => {
-    if (e.target === guideModal) guideModal.classList.add('hidden');
-    if (e.target === contactModal) contactModal.classList.add('hidden');
 });
 
 // Victim App Logic
@@ -278,7 +264,7 @@ async function processHackerCommand(cmd) {
         const auth = validator.verify('READ_BIO', { address: addr });
         if (auth.status === 'SAT') {
             const val = vCPU.read(addr);
-            const proof = await generateProofHash("WIN_0xDEAD_" + val);
+            const proof = await getSecureProof("WIN_0xDEAD_" + val);
             terminalOutput.innerHTML += `<div class="success">Data: ${val}</div>`;
             terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}</div>`;
             logAttempt(cmd, shieldEnabled, "SAT");
@@ -332,7 +318,7 @@ async function processHackerCommand(cmd) {
         }
         const auth = validator.verify('NET_EXPORT', { address: addr });
         if (auth.status === 'SAT') {
-            const proof = await generateProofHash("WIN_EXPORT_" + addrStr);
+            const proof = await getSecureProof("WIN_EXPORT_" + addrStr);
             logEvent("NETWORK", "Exported successfully.");
             terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}</div>`;
             logAttempt(cmd, shieldEnabled, "SAT");

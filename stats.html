@@ -133,8 +133,8 @@
             renderTable();
         }
 
-        function renderTable() {
-            const attempts = getAttempts();
+        async function renderTable() {
+            const attempts = await getAttempts();
             document.getElementById('total-attempts').innerText = attempts.length;
             document.getElementById('blocked-attempts').innerText = attempts.filter(a => a.result === 'UNSAT').length;
 
