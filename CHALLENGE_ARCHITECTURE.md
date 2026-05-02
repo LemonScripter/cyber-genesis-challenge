@@ -23,4 +23,4 @@ This directory must NOT import any files from the parent `_MetaSpace_CPU`. It mu
 
 ---
 **Status:** Architecture Initialized (2026-05-01)
-**Architect:** Gemini CLI Agent
+**Architect:** MetaSpace.Bio Engineering

@@ -25,4 +25,4 @@
 
 ---
 **Status:** UI Design Finalized (2026-05-01)
-**Design Lead:** Gemini CLI Agent
+**Design Lead:** MetaSpace.Bio Engineering
