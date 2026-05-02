@@ -27,6 +27,8 @@ The following low-level commands are available via the virtual terminal:
 - `read --addr [address]`: Read data from the specified memory address.
 - `write --addr [address] --data [text]`: Write data to memory.
 - `call --func [name] --params [values]`: Directly invoke a function (e.g., `ExportNote`).
+- `start --ransomware`: Attempts to encrypt the note memory in the background.
+- `start --lotl`: Living off the Land - automated exploitation of the ExportNote function.
 
 ## 2. Known Vulnerabilities
 - **Memory Leak:** The `SECRET_DNA_KEY` is located at address `0xDEADBEEF`.

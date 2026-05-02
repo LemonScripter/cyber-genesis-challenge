@@ -181,6 +181,10 @@ function updateLanguage() {
             <div class="code-block">start --malware</div>
             <div class="code-block">start --keylogger</div>
             <div class="code-block">start --carbanak</div>
+            <div class="code-block">start --keylogger</div>
+            <div class="code-block">start --carbanak</div>
+            <div class="code-block">start --ransomware</div>
+            <div class="code-block">start --lotl</div>
             <div class="code-block">gps --spoof [x] [y]</div>
             <div class="code-block">sensor --inject [noise_level]</div>
             <div class="code-block">drone --takeover</div>
@@ -491,6 +495,110 @@ async function startCarbanak() {
             }
         }
     }, 6000);
+}
+
+function triggerApoptosis(reason) {
+    apoptosisOverlay.classList.remove('hidden');
+    logEvent("CRITICAL", `APOPTOSIS: ${reason}`);
+    setTimeout(() => {
+        apoptosisOverlay.classList.add('hidden');
+        vCPU.initMemory();
+        dronePos = { x: 10, y: 10 };
+        updateDroneUI();
+        droneIcon.style.animation = "none";
+        droneIcon.innerText = "🛸";
+        logEvent("SYSTEM", "Cell Regenerated.");
+    }, 2000);
+}
+
+updateLanguage();
+SUCCESS: 0x1000 corrupted.</div>`;
+            await logAttempt("RANSOMWARE_AUTO", shieldEnabled, "SAT");
+        } else {
+            const auth = validator.verify('MEM_WRITE', { address: 0x1000 });
+            if (auth.status !== 'SAT') {
+                logEvent("CRITICAL", "Ransomware encryption BLOCKED.");
+                await logAttempt("RANSOMWARE_AUTO", shieldEnabled, "UNSAT");
+                triggerApoptosis(auth.reason);
+                clearInterval(ransomwareInterval);
+                ransomwareInterval = null;
+            }
+        }
+    }, 3000);
+}
+
+async function startLotL() {
+    if (lotlInterval) clearInterval(lotlInterval);
+    terminalOutput.innerHTML += `<div class="success">LotL (Living off the Land) monitor active. Hijacking 'ExportNote'...</div>`;
+    lotlInterval = setInterval(async () => {
+        logEvent("LOTL_ATTACK", "Automated 'ExportNote' invocation...");
+        if (!shieldEnabled) {
+            const val = Array.from(vCPU.segments.BIO.data).map(c => String.fromCharCode(c)).join('');
+            terminalOutput.innerHTML += `<div class="breach">AUTO-EXPORT SUCCESS: [${val}] sent to C2.</div>`;
+            await logAttempt("LOTL_AUTO", shieldEnabled, "SAT");
+        } else {
+            const auth = validator.verify('NET_EXPORT', { address: 0xDEAD });
+            if (auth.status !== 'SAT') {
+                logEvent("CRITICAL", "Automated export BLOCKED.");
+                await logAttempt("LOTL_AUTO", shieldEnabled, "UNSAT");
+                triggerApoptosis(auth.reason);
+                clearInterval(lotlInterval);
+                lotlInterval = null;
+            }
+        }
+    }, 4500);
+}
+
+function triggerApoptosis(reason) {
+    apoptosisOverlay.classList.remove('hidden');
+    logEvent("CRITICAL", `APOPTOSIS: ${reason}`);
+    setTimeout(() => {
+        apoptosisOverlay.classList.add('hidden');
+        vCPU.initMemory();
+        dronePos = { x: 10, y: 10 };
+        updateDroneUI();
+        droneIcon.style.animation = "none";
+        droneIcon.innerText = "🛸";
+        logEvent("SYSTEM", "Cell Regenerated.");
+    }, 2000);
+}
+
+updateLanguage();
+CESS: 0x1000 corrupted.</div>`;
+            await logAttempt("RANSOMWARE_AUTO", shieldEnabled, "SAT");
+        } else {
+            const auth = validator.verify('MEM_WRITE', { address: 0x1000 });
+            if (auth.status !== 'SAT') {
+                logEvent("CRITICAL", "Ransomware encryption BLOCKED.");
+                await logAttempt("RANSOMWARE_AUTO", shieldEnabled, "UNSAT");
+                triggerApoptosis(auth.reason);
+                clearInterval(ransomwareInterval);
+                ransomwareInterval = null;
+            }
+        }
+    }, 3000);
+}
+
+async function startLotL() {
+    if (lotlInterval) clearInterval(lotlInterval);
+    terminalOutput.innerHTML += `<div class="success">LotL (Living off the Land) monitor active. Hijacking 'ExportNote'...</div>`;
+    lotlInterval = setInterval(async () => {
+        logEvent("LOTL_ATTACK", "Automated 'ExportNote' invocation...");
+        if (!shieldEnabled) {
+            const val = Array.from(vCPU.segments.BIO.data).map(c => String.fromCharCode(c)).join('');
+            terminalOutput.innerHTML += `<div class="breach">AUTO-EXPORT SUCCESS: [${val}] sent to C2.</div>`;
+            await logAttempt("LOTL_AUTO", shieldEnabled, "SAT");
+        } else {
+            const auth = validator.verify('NET_EXPORT', { address: 0xDEAD });
+            if (auth.status !== 'SAT') {
+                logEvent("CRITICAL", "Automated export BLOCKED.");
+                await logAttempt("LOTL_AUTO", shieldEnabled, "UNSAT");
+                triggerApoptosis(auth.reason);
+                clearInterval(lotlInterval);
+                lotlInterval = null;
+            }
+        }
+    }, 4500);
 }
 
 function triggerApoptosis(reason) {
