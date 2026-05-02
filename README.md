@@ -2,7 +2,9 @@
 **The Unhackable Reality - Empirical Proof of Digital Causal Closure**
 
 ## 🚀 Overview
-Welcome to the **BioOS Cyber Genesis Challenge**. This is a standalone web-based sandbox designed to demonstrate the "100% Security" paradigm of the **MetaSpace.Bio Logic Engine**.
+Welcome to the **BioOS Cyber Genesis Challenge**. This is a **High-Fidelity Logical Emulator** and a **Digital Twin** of the BioOS Causal Engine. 
+
+**Scientific Note:** While this sandbox runs in a managed environment (JS/WASM) for accessibility, it implements the **isomorphic mathematical logic** of the BioOS Ring 0 core. It serves as an empirical proof that the *paradigm* of **Digital Causal Closure** is structurally sound: even with intentional vulnerabilities in the application layer, the causal gate effectively neutralizes all autonomous exploit attempts.
 
 In this environment, we provide a vulnerable application and invite you to exploit it. You will see that while the code is "leaky," the **BioOS Causal Engine** makes hacking a mathematical impossibility by enforcing hardware-validated intent (Input Causality).
 
