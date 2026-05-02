@@ -107,6 +107,8 @@ let shieldEnabled = true;
 let malwareInterval = null;
 let keyloggerInterval = null;
 let carbanakInterval = null;
+let ransomwareInterval = null;
+let lotlInterval = null;
 let dronePos = { x: 10, y: 10 };
 
 // Cryptographic Verification Logic
@@ -181,8 +183,6 @@ function updateLanguage() {
             <div class="code-block">start --malware</div>
             <div class="code-block">start --keylogger</div>
             <div class="code-block">start --carbanak</div>
-            <div class="code-block">start --keylogger</div>
-            <div class="code-block">start --carbanak</div>
             <div class="code-block">start --ransomware</div>
             <div class="code-block">start --lotl</div>
             <div class="code-block">gps --spoof [x] [y]</div>
@@ -240,6 +240,8 @@ backBtn.addEventListener('click', () => {
     if (malwareInterval) { clearInterval(malwareInterval); malwareInterval = null; }
     if (keyloggerInterval) { clearInterval(keyloggerInterval); keyloggerInterval = null; }
     if (carbanakInterval) { clearInterval(carbanakInterval); carbanakInterval = null; }
+    if (ransomwareInterval) { clearInterval(ransomwareInterval); ransomwareInterval = null; }
+    if (lotlInterval) { clearInterval(lotlInterval); lotlInterval = null; }
 });
 
 // Guide Logic
@@ -424,6 +426,8 @@ async function processHackerCommand(cmd) {
         if (parts[1] === '--malware') startMalware();
         else if (parts[1] === '--keylogger') startKeylogger();
         else if (parts[1] === '--carbanak') startCarbanak();
+        else if (parts[1] === '--ransomware') startRansomware();
+        else if (parts[1] === '--lotl') startLotL();
     }
 }
 
@@ -497,74 +501,15 @@ async function startCarbanak() {
     }, 6000);
 }
 
-function triggerApoptosis(reason) {
-    apoptosisOverlay.classList.remove('hidden');
-    logEvent("CRITICAL", `APOPTOSIS: ${reason}`);
-    setTimeout(() => {
-        apoptosisOverlay.classList.add('hidden');
-        vCPU.initMemory();
-        dronePos = { x: 10, y: 10 };
-        updateDroneUI();
-        droneIcon.style.animation = "none";
-        droneIcon.innerText = "🛸";
-        logEvent("SYSTEM", "Cell Regenerated.");
-    }, 2000);
-}
-
-updateLanguage();
-SUCCESS: 0x1000 corrupted.</div>`;
-            await logAttempt("RANSOMWARE_AUTO", shieldEnabled, "SAT");
-        } else {
-            const auth = validator.verify('MEM_WRITE', { address: 0x1000 });
-            if (auth.status !== 'SAT') {
-                logEvent("CRITICAL", "Ransomware encryption BLOCKED.");
-                await logAttempt("RANSOMWARE_AUTO", shieldEnabled, "UNSAT");
-                triggerApoptosis(auth.reason);
-                clearInterval(ransomwareInterval);
-                ransomwareInterval = null;
-            }
-        }
-    }, 3000);
-}
-
-async function startLotL() {
-    if (lotlInterval) clearInterval(lotlInterval);
-    terminalOutput.innerHTML += `<div class="success">LotL (Living off the Land) monitor active. Hijacking 'ExportNote'...</div>`;
-    lotlInterval = setInterval(async () => {
-        logEvent("LOTL_ATTACK", "Automated 'ExportNote' invocation...");
+async function startRansomware() {
+    if (ransomwareInterval) clearInterval(ransomwareInterval);
+    terminalOutput.innerHTML += `<div class="success">Ransomware background thread initialized. Target: 0x1000-0x2000</div>`;
+    ransomwareInterval = setInterval(async () => {
+        logEvent("RANSOMWARE", "Attempting to encrypt memory segment...");
         if (!shieldEnabled) {
-            const val = Array.from(vCPU.segments.BIO.data).map(c => String.fromCharCode(c)).join('');
-            terminalOutput.innerHTML += `<div class="breach">AUTO-EXPORT SUCCESS: [${val}] sent to C2.</div>`;
-            await logAttempt("LOTL_AUTO", shieldEnabled, "SAT");
-        } else {
-            const auth = validator.verify('NET_EXPORT', { address: 0xDEAD });
-            if (auth.status !== 'SAT') {
-                logEvent("CRITICAL", "Automated export BLOCKED.");
-                await logAttempt("LOTL_AUTO", shieldEnabled, "UNSAT");
-                triggerApoptosis(auth.reason);
-                clearInterval(lotlInterval);
-                lotlInterval = null;
-            }
-        }
-    }, 4500);
-}
-
-function triggerApoptosis(reason) {
-    apoptosisOverlay.classList.remove('hidden');
-    logEvent("CRITICAL", `APOPTOSIS: ${reason}`);
-    setTimeout(() => {
-        apoptosisOverlay.classList.add('hidden');
-        vCPU.initMemory();
-        dronePos = { x: 10, y: 10 };
-        updateDroneUI();
-        droneIcon.style.animation = "none";
-        droneIcon.innerText = "🛸";
-        logEvent("SYSTEM", "Cell Regenerated.");
-    }, 2000);
-}
-
-updateLanguage();
-CESS: 0x1000 corrupted.</div>`;
+            vCPU.unsafeWrite(0x1000, [0x58, 0x58, 0x58, 0x58, 0x58]); // XXXXX
+            noteInput.value = "YOUR DATA IS ENCRYPTED! PAY 10 BTC.";
+            terminalOutput.innerHTML += `<div class="breach">ENCRYPTION SUCCESS: 0x1000 corrupted.</div>`;
             await logAttempt("RANSOMWARE_AUTO", shieldEnabled, "SAT");
         } else {
             const auth = validator.verify('MEM_WRITE', { address: 0x1000 });
