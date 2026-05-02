@@ -158,6 +158,32 @@ textarea {
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0.5rem;
+        text-align: center;
+    }
+
+    .logo {
+        font-size: 0.9rem;
+    }
+
+    .controls {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .controls button {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    #dna-status {
+        display: none; /* Hide DNA status on small screens to save space */
+    }
+
     .grid-container {
         grid-template-columns: 1fr;
     }
