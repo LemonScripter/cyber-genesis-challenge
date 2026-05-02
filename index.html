@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioOS: Cyber Genesis Challenge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="matrix-bg"></div>
+    
+    <header>
+        <div class="logo">BioOS GENESIS v5.0</div>
+        <div class="controls">
+            <button id="guide-btn">Hacker kézikönyv / GUIDE</button>
+            <button id="back-btn" class="hidden">Vissza / Back</button>
+            <div class="shield-control">
+                <span id="shield-label">BioOS Pajzs:</span>
+                <label class="switch">
+                    <input type="checkbox" id="shield-toggle" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <button id="lang-toggle">EN / HU</button>
+            <div id="dna-status" class="status-ok">DNA: VERIFIED</div>
+        </div>
+    </header>
+
+    <main id="app-container">
+        <!-- Welcome Screen -->
+        <section id="welcome-screen" class="active">
+            <h1 id="welcome-title">BioOS: A feltörhetetlen valóság</h1>
+            <p id="welcome-text">
+                KIHÍVÁS! Próbáld meg feltörni a rendszert! Ez a sandbox nem csupán egy játék; ez egy empirikus bizonyíték arra, hogy a <strong>Digitális Okozatisági Zártsággal</strong> a hackelés matematikai képtelenséggé válik. Szándék nélkül nincs végrehajtás.
+            </p>
+            <div class="action-buttons">
+                <button id="start-btn">Belépés a sandbox-ba / ENTER SANDBOX</button>
+            </div>
+        </section>
+
+        <!-- Hacker Guide Modal -->
+        <div id="guide-modal" class="modal hidden">
+            <div class="modal-content">
+                <span id="close-modal" class="close">&times;</span>
+                <div id="guide-content">
+                    <!-- Dynamic Content -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Modal -->
+        <div id="contact-modal" class="modal hidden">
+            <div class="modal-content">
+                <span id="close-contact" class="close">&times;</span>
+                <h1 id="contact-title">Kapcsolat a fejlesztőkkel</h1>
+                <textarea id="contact-message" placeholder="Írja meg üzenetét... / Type your message here..."></textarea>
+                <button id="send-email-btn">Küldés / SEND</button>
+            </div>
+        </div>
+
+        <!-- Main Challenge View (Hidden by default) -->
+        <section id="challenge-view" class="hidden">
+            <div class="mobile-tabs">
+                <button class="tab-btn active" data-tab="app-view">APP</button>
+                <button class="tab-btn" data-tab="terminal-view">TERMINAL</button>
+                <button class="tab-btn" data-tab="log-view">LOGS</button>
+            </div>
+
+            <div class="grid-container">
+                <div id="app-view" class="tab-content active">
+                    <div class="victim-app">
+                        <h3>Secure_Note v1.0</h3>
+                        <textarea id="note-input" placeholder="Írjon ide... / Type here..."></textarea>
+                        <button id="save-btn">Mentés / SAVE</button>
+                        
+                        <div class="drone-simulation">
+                            <h4>BioDrone_v2 Live Telemetry</h4>
+                            <div id="drone-map">
+                                <div id="drone-icon">🛸</div>
+                                <div id="target-base">🏠</div>
+                            </div>
+                            <div id="telemetry-data">POS: X=10, Y=10 | ALT: 25m</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="terminal-view" class="tab-content">
+                    <div class="terminal">
+                        <div id="terminal-output">Welcome to BioOS Hacker Terminal...</div>
+                        <div class="input-line">
+                            <span>></span>
+                            <input type="text" id="hacker-input" placeholder="Enter exploit command...">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="log-view" class="tab-content">
+                    <div class="causal-log">
+                        <h3>BioOS Causal Monitor</h3>
+                        <div id="log-stream"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="main-footer">
+        <div class="footer-content">
+            <span id="project-label">MetaSpace Logic Engine projekt</span>
+            <a href="https://metaspace.bio" target="_blank">metaspace.bio</a>
+            <button id="contact-btn">Kapcsolat / Contact</button>
+        </div>
+    </footer>
+
+    <footer id="apoptosis-overlay" class="hidden">
+        <div class="glitch-text">APOPTOSIS: REGENERATING...</div>
+    </footer>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

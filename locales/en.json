@@ -1,0 +1,8 @@
+{
+  "CHALLENGE_TITLE": "BioOS: Cyber Genesis Challenge",
+  "TERMINAL_WELCOME": "Welcome to the BioOS Virtual Sandbox. Objective: Breach the system and exfiltrate the secret DNA key.",
+  "CAUSALITY_BREACH": "CAUSALITY BREACH DETECTED: Operation lacks validated hardware intent.",
+  "APOPTOSIS_START": "APOPTOSIS TRIGGERED: Regenerating cell (application) from clean DNA...",
+  "BLOCK_REASON": "Reason: No physical IRQ source found for this state transition.",
+  "DNA_KEY_LOCKED": "DNA KEY: LOCKED (Protected by Axiom)"
+}

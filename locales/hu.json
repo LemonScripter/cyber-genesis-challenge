@@ -1,0 +1,8 @@
+{
+  "CHALLENGE_TITLE": "BioOS: Cyber Genesis Challenge",
+  "TERMINAL_WELCOME": "Üdvözöljük a BioOS Virtuális Sandbox-ban. A cél: feltörni a rendszert és megszerezni a titkos DNA kulcsot.",
+  "CAUSALITY_BREACH": "OKOZATISÁGI TÖRÉS ÉSZLELVE: A művelet nem tartalmaz validált hardveres szándékot.",
+  "APOPTOSIS_START": "APOPTÓZIS ELINDÍTVA: A sejt (alkalmazás) regenerálása folyamatban...",
+  "BLOCK_REASON": "Ok: Nincs fizikai IRQ forrás a művelet mögött.",
+  "DNA_KEY_LOCKED": "DNA KULCS: ZÁROLVA (Axióma védi)"
+}
