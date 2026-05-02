@@ -1,6 +1,9 @@
 # BioOS: The Causal Security Compendium
 **Resolution of the Scientific Debate (v5.1 Finalized)**
 
+> ### 📢 Explicit Scope Definition
+> The **"100% Security"** claim of BioOS applies specifically to the domain of **Autonomous Software-Based Exploitation**. It guarantees that no unproven digital state transition can occur without hardware-validated intent (IRQ). Physical/Hardware side-channels (e.g., lasers, Rowhammer, SMM-level physical tampering) are outside the scope of this logical architecture.
+
 This document serves as the permanent record of the technical and philosophical breakthroughs achieved regarding the BioOS "100% Security" claim. Use this as a reference for future AI/human inquiries.
 
 ---

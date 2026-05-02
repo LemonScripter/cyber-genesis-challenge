@@ -111,10 +111,9 @@ let dronePos = { x: 10, y: 10 };
 
 // Cryptographic Verification Logic
 async function generateProofHash(data) {
-    const msgUint8 = new TextEncoder().encode(data + "BIOOS_SECRET_SALT_2026");
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    // [HU] Biztonsági javítás: A hash generálást teljesen áthelyeztük a szerveroldalra, 
+    // hogy a "SALT" soha ne kerüljön ki a kliens böngészőjébe.
+    return await getSecureProof(data);
 }
 
 // Shield Toggle Logic
@@ -131,6 +130,26 @@ langToggle.addEventListener('click', () => {
     currentLang = currentLang === 'hu' ? 'en' : 'hu';
     localStorage.setItem('bioos_lang', currentLang);
     updateLanguage();
+});
+
+// Mobile Tab Logic
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-tab');
+        
+        // Remove active class from all buttons and contents
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked button and target content
+        btn.classList.add('active');
+        document.getElementById(target).classList.add('active');
+        
+        logEvent("SYSTEM", `Switched to tab: ${target}`);
+    });
 });
 
 function updateLanguage() {

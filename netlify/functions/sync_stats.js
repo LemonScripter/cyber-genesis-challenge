@@ -10,6 +10,9 @@ exports.handler = async (event, context) => {
     }
     const client = new Client({
         connectionString: DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false
+        }
     });
 
     try {

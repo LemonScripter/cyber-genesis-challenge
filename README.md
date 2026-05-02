@@ -1,6 +1,9 @@
 # BioOS: Cyber Genesis Challenge
 **The Unhackable Reality - Empirical Proof of Digital Causal Closure**
 
+> ### 📢 Explicit Scope Definition
+> The **"100% Security"** claim of BioOS applies specifically to the domain of **Autonomous Software-Based Exploitation** (e.g., RCE, Malware, Logic Hacks, Privilege Escalation). It guarantees that no unproven digital state transition can occur without hardware-validated intent (IRQ). Physical/Hardware side-channels (e.g., lasers, Rowhammer, SMM-level physical tampering) are outside the scope of this logical architecture. By explicitly defining this boundary, BioOS creates a deterministically integrity-assured environment within its operational domain.
+
 ## 🚀 Overview
 Welcome to the **BioOS Cyber Genesis Challenge**. This is a **High-Fidelity Logical Emulator** and a **Digital Twin** of the BioOS Causal Engine. 
 
