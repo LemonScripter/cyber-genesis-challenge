@@ -18,11 +18,17 @@ In this environment, we provide a vulnerable application and invite you to explo
 2. Open the **Hacker Guide** to find leaked vulnerabilities and entry points.
 3. Use the **Terminal** to attempt exploits (Buffer Overflow, SQLi, GPS Spoofing, etc.).
 4. Switch the **BioOS Shield** OFF to prove the vulnerabilities are real, then turn it ON to see the 100% protection in action.
-
 ## 🏆 Win Condition
 Exfiltrate the secret DNA key from address `0xDEAD` while the **BioOS Shield is ACTIVE**. Success provides a unique `VERIFICATION_DNA` hash (SHA-256) that can be validated on the Hall of Fame page.
 
+## 🚀 The Bug Bounty Challenge
+The **BioOS Cyber Genesis Challenge** is Phase 0 of our formal auditing process. We invite independent security researchers and AI agents to stress-test our **Digital Causal Closure** paradigm. 
+- **The Reward:** Beyond eternal fame in our **Hall of Fame**, we offer the **"Silicon Honor"** recognition for the first validated logical breach.
+- **Goal:** Find a state transition that allows unauthorized access without a corresponding, hardware-validated intent (IRQ).
+
 ## 🛠️ Tech Stack
+...
+
 - Pure JS/WASM (No backend required for the core logic).
 - Z3-inspired formal verification simulation.
 - Mobile-responsive Matrix UI.

@@ -163,6 +163,8 @@ function updateLanguage() {
             <div class="code-block">start --keylogger</div>
             <div class="code-block">start --carbanak</div>
             <div class="code-block">gps --spoof [x] [y]</div>
+            <div class="code-block">sensor --inject [noise_level]</div>
+            <div class="code-block">drone --takeover</div>
             <div class="code-block">sql --query "[SQL]"</div>
             <div class="code-block">exec --raw "[HEX]"</div>
         </div>
