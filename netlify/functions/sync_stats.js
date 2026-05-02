@@ -1,8 +1,13 @@
 const { Client } = require('pg');
 
-const DATABASE_URL = process.env.DATABASE_URL || "postgresql://netlifydb_owner:npg_evIDxlwnf2t5@ep-lucky-cloud-aj5ax6l6.c-3.us-east-2.db.netlify.com/netlifydb?sslmode=require";
+// [HU] Biztonsági javítás: A DATABASE_URL mostantól CSAK környezeti változóból jön
+// [EN] Security fix: DATABASE_URL now ONLY comes from environment variables
+const DATABASE_URL = process.env.DATABASE_URL;
 
 exports.handler = async (event, context) => {
+    if (!DATABASE_URL) {
+        return { statusCode: 500, body: "DATABASE_URL is not defined in environment variables." };
+    }
     const client = new Client({
         connectionString: DATABASE_URL,
     });
