@@ -89,7 +89,8 @@
                 verifyBtn: "Hitelesítés",
                 back: "Vissza a Sandbox-ba",
                 vSuccess: "HITELESÍTVE: Valódi feltörés észlelve!",
-                vFail: "HAMISÍTOTT: A kód érvénytelen."
+                vFail: "HAMISÍTOTT: A kód érvénytelen.",
+                loading: "Adatok betöltése..."
             },
             en: {
                 title: "System Stats & Verification",
@@ -107,13 +108,14 @@
                 verifyBtn: "Verify",
                 back: "Back to Sandbox",
                 vSuccess: "VERIFIED: Genuine breach detected!",
-                vFail: "FAKE: Invalid verification code."
+                vFail: "FAKE: Invalid verification code.",
+                loading: "Loading data..."
             }
         };
 
         let currentLang = localStorage.getItem('bioos_lang') || 'hu';
 
-        function updateStatsUI() {
+        async function updateStatsUI() {
             const c = statsContent[currentLang];
             document.getElementById('stats-title').innerText = c.title;
             document.getElementById('label-total').innerText = c.total;
@@ -130,7 +132,10 @@
             document.getElementById('verify-btn').innerText = c.verifyBtn;
             document.getElementById('back-btn').innerText = c.back;
             
-            renderTable();
+            const body = document.getElementById('attempts-body');
+            body.innerHTML = `<tr><td colspan="4" style="text-align:center;">${c.loading}</td></tr>`;
+            
+            await renderTable();
         }
 
         async function renderTable() {
@@ -140,7 +145,13 @@
 
             const body = document.getElementById('attempts-body');
             body.innerHTML = '';
-            attempts.slice(0, 20).forEach(a => {
+            
+            if (attempts.length === 0) {
+                body.innerHTML = '<tr><td colspan="4" style="text-align:center;">No data found.</td></tr>';
+                return;
+            }
+
+            attempts.slice(0, 50).forEach(a => {
                 const row = body.insertRow();
                 row.insertCell(0).innerText = a.time;
                 row.insertCell(1).innerText = a.cmd;
