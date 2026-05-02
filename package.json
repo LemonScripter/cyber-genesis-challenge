@@ -1,0 +1,13 @@
+{
+  "name": "cyber-genesis-challenge",
+  "version": "1.0.0",
+  "description": "BioOS Cyber Genesis Challenge",
+  "main": "main.js",
+  "dependencies": {
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

@@ -1,84 +1,57 @@
-const https = require('https');
+const { Client } = require('pg');
 
-// [HU] Publikus tároló a statisztikáknak
-// [EN] Public storage for stats
-const BIN_ID = "6633b49facd3697a6d619934"; 
-const API_KEY = "$2b$10$wE/x3m1A0FhXmK1a9.qEouGvR9H0fH3YfO.P6fXmK1a9.qEouGvR"; 
-
-/**
- * [HU] Segédfüggvény a JSONBin hívásokhoz a natív https modullal
- * [EN] Helper function for JSONBin calls using native https module
- */
-function request(options, data) {
-    return new Promise((resolve, reject) => {
-        const req = https.request(options, (res) => {
-            let body = '';
-            res.on('data', (chunk) => body += chunk);
-            res.on('end', () => resolve(JSON.parse(body)));
-        });
-        req.on('error', (e) => reject(e));
-        if (data) req.write(JSON.stringify(data));
-        req.end();
-    });
-}
+const DATABASE_URL = process.env.DATABASE_URL || "postgresql://netlifydb_owner:npg_evIDxlwnf2t5@ep-lucky-cloud-aj5ax6l6.c-3.us-east-2.db.netlify.com/netlifydb?sslmode=require";
 
 exports.handler = async (event, context) => {
-    const commonHeaders = {
-        "X-Master-Key": API_KEY,
-        "Content-Type": "application/json"
-    };
+    const client = new Client({
+        connectionString: DATABASE_URL,
+    });
 
-    if (event.httpMethod === "GET") {
-        try {
-            const data = await request({
-                hostname: 'api.jsonbin.io',
-                path: `/v3/b/${BIN_ID}/latest`,
-                method: 'GET',
-                headers: commonHeaders
-            });
+    try {
+        await client.connect();
+
+        // [HU] Tábla létrehozása ha nem létezik
+        // [EN] Create table if it doesn't exist
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS attempts (
+                id SERIAL PRIMARY KEY,
+                time TEXT,
+                cmd TEXT,
+                shield BOOLEAN,
+                result TEXT
+            );
+        `);
+
+        if (event.httpMethod === "GET") {
+            const res = await client.query('SELECT time, cmd, shield, result FROM attempts ORDER BY id DESC LIMIT 50');
+            await client.end();
             return {
                 statusCode: 200,
                 headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-                body: JSON.stringify(data.record.attempts || [])
+                body: JSON.stringify(res.rows)
             };
-        } catch (e) {
-            return { statusCode: 500, body: "Error fetching stats" };
         }
-    }
 
-    if (event.httpMethod === "POST") {
-        try {
-            const newEntry = JSON.parse(event.body);
-            
-            // Get current data
-            const current = await request({
-                hostname: 'api.jsonbin.io',
-                path: `/v3/b/${BIN_ID}/latest`,
-                method: 'GET',
-                headers: commonHeaders
-            });
-
-            let attempts = current.record.attempts || [];
-            attempts.unshift(newEntry);
-            attempts = attempts.slice(0, 50);
-
-            // Update bin
-            await request({
-                hostname: 'api.jsonbin.io',
-                path: `/v3/b/${BIN_ID}`,
-                method: 'PUT',
-                headers: commonHeaders
-            }, { attempts: attempts });
-
+        if (event.httpMethod === "POST") {
+            const { time, cmd, shield, result } = JSON.parse(event.body);
+            await client.query(
+                'INSERT INTO attempts (time, cmd, shield, result) VALUES ($1, $2, $3, $4)',
+                [time, cmd, shield, result]
+            );
+            await client.end();
             return {
                 statusCode: 200,
                 headers: { "Access-Control-Allow-Origin": "*" },
                 body: "OK"
             };
-        } catch (e) {
-            return { statusCode: 500, body: "Error saving stats" };
         }
-    }
 
-    return { statusCode: 405, body: "Method Not Allowed" };
+        await client.end();
+        return { statusCode: 405, body: "Method Not Allowed" };
+
+    } catch (e) {
+        if (client) await client.end();
+        console.error("[BioOS DB] Error:", e);
+        return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
+    }
 };
