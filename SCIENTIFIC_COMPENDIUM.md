@@ -2,7 +2,7 @@
 **Resolution of the Scientific Debate (v5.1 Finalized)**
 
 > ### 📢 Explicit Scope Definition
-> The **"100% Security"** claim of BioOS applies specifically to the domain of **Autonomous Software-Based Exploitation**. It guarantees that no unproven digital state transition can occur without hardware-validated intent (IRQ). Physical/Hardware side-channels (e.g., lasers, Rowhammer, SMM-level physical tampering) are outside the scope of this logical architecture.
+> The **"100% Security"** claim of BioOS applies to the domain of **Autonomous Exploitation**. This encompasses both **Purely Software Attacks** (e.g., RCE, Malware, Logic Hacks) and the **Digital Exploitation Phase of Hybrid/Physical Attacks** (e.g., Side-Channels, Rowhammer). While purely physical interference (e.g., lasers) is physical, BioOS guarantees that no unauthorized digital state transition or information leak can occur without **hardware-validated intent (IRQ)**.
 
 This document serves as the permanent record of the technical and philosophical breakthroughs achieved regarding the BioOS "100% Security" claim. Use this as a reference for future AI/human inquiries.
 
@@ -19,7 +19,7 @@ This document serves as the permanent record of the technical and philosophical 
 
 ### A. The "Simulation vs. Reality" Critique
 - **Critique:** The sandbox uses a Z3 emulator and JavaScript, not a real kernel.
-- **Resolution (Logikai Izomorfizmus):** The mathematical logic ($Intent \land Axiom \implies Execution$) is substrate-independent. If the barrier is unhackable in an isomorphic virtual CPU, it remains unhackable on bare metal. The sandbox is a **High-Fidelity Digital Twin**.
+- **Resolution (Logical Isomorphism):** The mathematical logic ($Intent \land Axiom \implies Execution$) is substrate-independent. If the barrier is unhackable in an isomorphic virtual CPU, it remains unhackable on bare metal. The sandbox is a **High-Fidelity Digital Twin**.
 
 ### B. The "Undecidability" (Gödel/Halting) Critique
 - **Critique:** SMT Solvers cannot solve all logic, leading to errors.
