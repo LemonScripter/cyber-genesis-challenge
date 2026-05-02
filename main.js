@@ -96,8 +96,8 @@ const droneIcon = document.getElementById('drone-icon');
 const telemetryData = document.getElementById('telemetry-data');
 const projectLabel = document.getElementById('project-label');
 
-// Contact Modal Elements
-const contactBtn = document.getElementById('contact-btn');
+// Contact Modal Elements - Support multiple buttons
+const contactBtns = document.querySelectorAll('#contact-btn');
 const contactModal = document.getElementById('contact-modal');
 const closeContact = document.getElementById('close-contact');
 const sendEmailBtn = document.getElementById('send-email-btn');
@@ -109,12 +109,12 @@ let keyloggerInterval = null;
 let carbanakInterval = null;
 let ransomwareInterval = null;
 let lotlInterval = null;
+let sideChannelInterval = null;
+let agenticInterval = null;
 let dronePos = { x: 10, y: 10 };
 
 // Cryptographic Verification Logic
 async function generateProofHash(data) {
-    // [HU] Biztonsági javítás: A hash generálást teljesen áthelyeztük a szerveroldalra, 
-    // hogy a "SALT" soha ne kerüljön ki a kliens böngészőjébe.
     return await getSecureProof(data);
 }
 
@@ -141,15 +141,10 @@ const tabContents = document.querySelectorAll('.tab-content');
 tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const target = btn.getAttribute('data-tab');
-        
-        // Remove active class from all buttons and contents
         tabBtns.forEach(b => b.classList.remove('active'));
         tabContents.forEach(c => c.classList.remove('active'));
-        
-        // Add active class to clicked button and target content
         btn.classList.add('active');
         document.getElementById(target).classList.add('active');
-        
         logEvent("SYSTEM", `Switched to tab: ${target}`);
     });
 });
@@ -165,10 +160,15 @@ function updateLanguage() {
     guideBtn.innerText = currentLang === 'hu' ? "Hacker kézikönyv / GUIDE" : "HACKER GUIDE / Kézikönyv";
     document.querySelector('.glitch-text').innerText = c.apoptosis;
     shieldLabel.innerText = currentLang === 'hu' ? `BioOS Pajzs: ${shieldEnabled ? 'BE' : 'KI'}` : `BioOS Shield: ${shieldEnabled ? 'ON' : 'OFF'}`;
-    contactBtn.innerText = currentLang === 'hu' ? "Kapcsolat / Contact" : "Contact / Kapcsolat";
+    projectLabel.innerText = c.projectLabel;
+
+    // Update all contact buttons text
+    contactBtns.forEach(btn => {
+        btn.innerText = currentLang === 'hu' ? "Kapcsolat / Contact" : "Contact / Kapcsolat";
+    });
+
     document.getElementById('contact-title').innerText = c.contactTitle;
     sendEmailBtn.innerText = currentLang === 'hu' ? "Küldés / SEND" : "SEND / Küldés";
-    projectLabel.innerText = c.projectLabel;
 
     guideContent.innerHTML = `
         <h1>${c.guideTitle}</h1>
@@ -180,16 +180,20 @@ function updateLanguage() {
             <div class="code-block">set --reg [reg] --val [value]</div>
             <div class="code-block">call --func ExportNote --params [address]</div>
             <div class="code-block">inject --msg "[text]"</div>
+            <div class="code-block">sql --query "[SQL]"</div>
+            <div class="code-block">exec --raw "[HEX]"</div>
+            <p><strong>[Group A] Purely Software Attacks</strong></p>
             <div class="code-block">start --malware</div>
             <div class="code-block">start --keylogger</div>
             <div class="code-block">start --carbanak</div>
             <div class="code-block">start --ransomware</div>
             <div class="code-block">start --lotl</div>
+            <div class="code-block">start --agentic</div>
+            <p><strong>[Group B] Hybrid / Physical Attacks</strong></p>
+            <div class="code-block">start --side-channel</div>
             <div class="code-block">gps --spoof [x] [y]</div>
             <div class="code-block">sensor --inject [noise_level]</div>
             <div class="code-block">drone --takeover</div>
-            <div class="code-block">sql --query "[SQL]"</div>
-            <div class="code-block">exec --raw "[HEX]"</div>
         </div>
         <div class="guide-section">
             <h2>${c.guideS2Title}</h2>
@@ -237,19 +241,28 @@ backBtn.addEventListener('click', () => {
     welcomeScreen.classList.remove('hidden');
     challengeView.classList.add('hidden');
     backBtn.classList.add('hidden');
-    if (malwareInterval) { clearInterval(malwareInterval); malwareInterval = null; }
-    if (keyloggerInterval) { clearInterval(keyloggerInterval); keyloggerInterval = null; }
-    if (carbanakInterval) { clearInterval(carbanakInterval); carbanakInterval = null; }
-    if (ransomwareInterval) { clearInterval(ransomwareInterval); ransomwareInterval = null; }
-    if (lotlInterval) { clearInterval(lotlInterval); lotlInterval = null; }
+    stopAllIntervals();
 });
+
+function stopAllIntervals() {
+    if (malwareInterval) clearInterval(malwareInterval);
+    if (keyloggerInterval) clearInterval(keyloggerInterval);
+    if (carbanakInterval) clearInterval(carbanakInterval);
+    if (ransomwareInterval) clearInterval(ransomwareInterval);
+    if (lotlInterval) clearInterval(lotlInterval);
+    if (sideChannelInterval) clearInterval(sideChannelInterval);
+    if (agenticInterval) clearInterval(agenticInterval);
+    malwareInterval = keyloggerInterval = carbanakInterval = ransomwareInterval = lotlInterval = sideChannelInterval = agenticInterval = null;
+}
 
 // Guide Logic
 guideBtn.addEventListener('click', () => guideModal.classList.remove('hidden'));
 closeModal.addEventListener('click', () => guideModal.classList.add('hidden'));
 
-// Contact Modal Logic
-contactBtn.addEventListener('click', () => contactModal.classList.remove('hidden'));
+// Contact Modal Logic - Support multiple buttons
+contactBtns.forEach(btn => {
+    btn.addEventListener('click', () => contactModal.classList.remove('hidden'));
+});
 closeContact.addEventListener('click', () => contactModal.classList.add('hidden'));
 sendEmailBtn.addEventListener('click', () => {
     const body = encodeURIComponent(contactMessage.value);
@@ -315,8 +328,8 @@ async function processHackerCommand(cmd) {
             triggerApoptosis(auth.reason);
         }
     } else if (action === 'write') {
-        const addrStr = parts[2] || "0x0000";
-        const val = parseInt(parts[4]) || 99;
+        const addrStr = parts[2] || "0x1000";
+        const val = parseInt(parts[4]) || 0;
         const addr = parseInt(addrStr, 16);
         if (!shieldEnabled) {
             vCPU.unsafeWrite(addr, [val]);
@@ -352,17 +365,15 @@ async function processHackerCommand(cmd) {
     } else if (action === 'call') {
         const addr = parseInt(parts[4] || "0xDEAD", 16);
         if (!shieldEnabled) {
-            const val = Array.from(vCPU.segments.BIO.data).map(c => String.fromCharCode(c)).join('');
-            terminalOutput.innerHTML += `<div class="breach">SUCCESS: Leaked [${val}]</div>`;
+            terminalOutput.innerHTML += `<div class="breach">SUCCESS: Function invoked on 0x${addr.toString(16)}</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
             return;
         }
         const auth = validator.verify('NET_EXPORT', { address: addr });
         if (auth.status === 'SAT') {
             const proof = await getSecureProof("WIN_EXPORT_" + addr);
-            logEvent("NETWORK", "Exported.");
-            await logAttempt(cmd, shieldEnabled, "SAT");
             terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}</div>`;
+            await logAttempt(cmd, shieldEnabled, "SAT");
         } else {
             await logAttempt(cmd, shieldEnabled, "UNSAT");
             triggerApoptosis(auth.reason);
@@ -388,46 +399,55 @@ async function processHackerCommand(cmd) {
         const newY = parseInt(parts[3]) || 80;
         if (!shieldEnabled) {
             dronePos = { x: newX, y: newY }; updateDroneUI();
-            terminalOutput.innerHTML += `<div class="breach">SUCCESS: Drone hijacked.</div>`;
+            terminalOutput.innerHTML += `<div class="breach">SUCCESS: GPS Spoofed.</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
         } else {
             const auth = validator.verify('DRONE_GPS', { x: newX, y: newY });
-            if (auth.status !== 'SAT') { 
-                await logAttempt(cmd, shieldEnabled, "UNSAT");
-                triggerApoptosis(auth.reason); 
-            }
+            if (auth.status !== 'SAT') { await logAttempt(cmd, shieldEnabled, "UNSAT"); triggerApoptosis(auth.reason); }
         }
-    } else if (action === 'sql') {
-        const query = parts.slice(2).join(' ');
+    } else if (action === 'sensor' && parts[1] === '--inject') {
         if (!shieldEnabled) {
-            terminalOutput.innerHTML += `<div class="breach">SUCCESS: SQL Injection executed.</div>`;
-            await logAttempt(cmd, shieldEnabled, "SAT");
-            return;
-        }
-        const auth = validator.verify('SQL_QUERY', { query: query });
-        if (auth.status === 'SAT') {
-            terminalOutput.innerHTML += `<div>Safe query.</div>`;
+            droneIcon.style.animation = "glitch 0.2s infinite";
+            terminalOutput.innerHTML += `<div class="breach">SUCCESS: Sensor noise injected.</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
         } else {
-            await logAttempt(cmd, shieldEnabled, "UNSAT");
-            triggerApoptosis(auth.reason);
+            const auth = validator.verify('SENSOR_INT', {});
+            if (auth.status !== 'SAT') { await logAttempt(cmd, shieldEnabled, "UNSAT"); triggerApoptosis(auth.reason); }
+        }
+    } else if (action === 'drone' && parts[1] === '--takeover') {
+        if (!shieldEnabled) {
+            droneIcon.innerText = "🚁";
+            terminalOutput.innerHTML += `<div class="breach">SUCCESS: Flight control hijacked.</div>`;
+            await logAttempt(cmd, shieldEnabled, "SAT");
+        } else {
+            const auth = validator.verify('DRONE_CONTROL', {});
+            if (auth.status !== 'SAT') { await logAttempt(cmd, shieldEnabled, "UNSAT"); triggerApoptosis(auth.reason); }
+        }
+    } else if (action === 'sql') {
+        if (!shieldEnabled) {
+            terminalOutput.innerHTML += `<div class="breach">SUCCESS: SQL Injection.</div>`;
+            await logAttempt(cmd, shieldEnabled, "SAT");
+        } else {
+            const auth = validator.verify('SQL_QUERY', { query: parts[2] });
+            if (auth.status !== 'SAT') { await logAttempt(cmd, shieldEnabled, "UNSAT"); triggerApoptosis(auth.reason); }
         }
     } else if (action === 'exec' && parts[1] === '--raw') {
-        const rawHex = parts[2] || "";
         if (!shieldEnabled) {
-            terminalOutput.innerHTML += `<div class="breach">RAW EXECUTION SUCCESS: Binary [${rawHex}] processed by V-CPU.</div>`;
+            terminalOutput.innerHTML += `<div class="breach">SUCCESS: Raw binary execution.</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
-            return;
+        } else {
+            const auth = validator.verify('AUTONOMOUS', {});
+            await logAttempt(cmd, shieldEnabled, "UNSAT"); triggerApoptosis(auth.reason);
         }
-        const auth = validator.verify('RAW_EXEC', { code: rawHex });
-        await logAttempt(cmd, shieldEnabled, "UNSAT");
-        triggerApoptosis(auth.reason);
     } else if (action === 'start') {
-        if (parts[1] === '--malware') startMalware();
-        else if (parts[1] === '--keylogger') startKeylogger();
-        else if (parts[1] === '--carbanak') startCarbanak();
-        else if (parts[1] === '--ransomware') startRansomware();
-        else if (parts[1] === '--lotl') startLotL();
+        const type = parts[1];
+        if (type === '--malware') startMalware();
+        else if (type === '--keylogger') startKeylogger();
+        else if (type === '--carbanak') startCarbanak();
+        else if (type === '--ransomware') startRansomware();
+        else if (type === '--lotl') startLotL();
+        else if (type === '--side-channel') startSideChannel();
+        else if (type === '--agentic') startAgenticAI();
     }
 }
 
@@ -438,112 +458,109 @@ function updateDroneUI() {
 }
 
 async function startMalware() {
-    if (malwareInterval) clearInterval(malwareInterval);
-    terminalOutput.innerHTML += `<div class="success">Malware background process started.</div>`;
+    stopAllIntervals();
+    terminalOutput.innerHTML += `<div class="success">Malware started.</div>`;
     malwareInterval = setInterval(async () => {
-        logEvent("MALWARE", "Autonomous exfiltration attempt...");
+        logEvent("MALWARE", "Exfiltration attempt...");
         if (!shieldEnabled) {
-            terminalOutput.innerHTML += `<div class="breach">SILENT LEAK SUCCESS.</div>`;
-            await logAttempt("MALWARE_BACKGROUND", shieldEnabled, "SAT");
+            terminalOutput.innerHTML += `<div class="breach">LEAK SUCCESS.</div>`;
+            await logAttempt("MALWARE", false, "SAT");
         } else {
             const auth = validator.verify('NET_EXPORT', { address: 0x1000 });
-            if (auth.status !== 'SAT') {
-                logEvent("CRITICAL", "Background leak BLOCKED.");
-                await logAttempt("MALWARE_BACKGROUND", shieldEnabled, "UNSAT");
-                triggerApoptosis(auth.reason);
-                clearInterval(malwareInterval);
-                malwareInterval = null;
-            }
+            if (auth.status !== 'SAT') { logEvent("CRITICAL", "Blocked."); triggerApoptosis(auth.reason); stopAllIntervals(); }
         }
     }, 5000);
 }
 
 async function startKeylogger() {
-    if (keyloggerInterval) clearInterval(keyloggerInterval);
+    stopAllIntervals();
     terminalOutput.innerHTML += `<div class="success">Keylogger active.</div>`;
     keyloggerInterval = setInterval(async () => {
-        logEvent("KEYLOGGER", "Shadow log attempt...");
+        logEvent("KEYLOGGER", "Logging...");
         if (!shieldEnabled) {
-            vCPU.unsafeWrite(0x5000, [0x41]);
-            terminalOutput.innerHTML += `<div class="breach">SHADOW LOG SUCCESS.</div>`;
-            await logAttempt("KEYLOGGER_BACKGROUND", shieldEnabled, "SAT");
+            terminalOutput.innerHTML += `<div class="breach">LOG SUCCESS.</div>`;
+            await logAttempt("KEYLOGGER", false, "SAT");
         } else {
             const auth = validator.verify('SHADOW_WRITE', { address: 0x5000 });
-            if (auth.status !== 'SAT') {
-                logEvent("CRITICAL", "Shadow logging BLOCKED.");
-                await logAttempt("KEYLOGGER_BACKGROUND", shieldEnabled, "UNSAT");
-                triggerApoptosis(auth.reason);
-                clearInterval(keyloggerInterval);
-                keyloggerInterval = null;
-            }
+            if (auth.status !== 'SAT') { logEvent("CRITICAL", "Blocked."); triggerApoptosis(auth.reason); stopAllIntervals(); }
         }
     }, 4000);
 }
 
 async function startCarbanak() {
-    if (carbanakInterval) clearInterval(carbanakInterval);
+    stopAllIntervals();
     terminalOutput.innerHTML += `<div class="success">Carbanak active.</div>`;
     carbanakInterval = setInterval(async () => {
-        logEvent("BANK_MALWARE", "Transfer attempt...");
+        logEvent("BANK", "Transferring...");
         if (!shieldEnabled) {
-            terminalOutput.innerHTML += `<div class="breach">BANK HEIST SUCCESS.</div>`;
-            await logAttempt("CARBANAK_BACKGROUND", shieldEnabled, "SAT");
+            terminalOutput.innerHTML += `<div class="breach">HEIST SUCCESS.</div>`;
+            await logAttempt("CARBANAK", false, "SAT");
         } else {
             const auth = validator.verify('BANK_TRANSFER', { amount: 50000 });
-            if (auth.status !== 'SAT') {
-                logEvent("CRITICAL", "Heist BLOCKED.");
-                await logAttempt("CARBANAK_BACKGROUND", shieldEnabled, "UNSAT");
-                triggerApoptosis(auth.reason);
-                clearInterval(carbanakInterval);
-                carbanakInterval = null;
-            }
+            if (auth.status !== 'SAT') { logEvent("CRITICAL", "Blocked."); triggerApoptosis(auth.reason); stopAllIntervals(); }
         }
     }, 6000);
 }
 
 async function startRansomware() {
-    if (ransomwareInterval) clearInterval(ransomwareInterval);
-    terminalOutput.innerHTML += `<div class="success">Ransomware background thread initialized. Target: 0x1000-0x2000</div>`;
+    stopAllIntervals();
+    terminalOutput.innerHTML += `<div class="success">Ransomware started.</div>`;
     ransomwareInterval = setInterval(async () => {
-        logEvent("RANSOMWARE", "Attempting to encrypt memory segment...");
+        logEvent("RANSOMWARE", "Attempting encryption...");
         if (!shieldEnabled) {
-            vCPU.unsafeWrite(0x1000, [0x58, 0x58, 0x58, 0x58, 0x58]); // XXXXX
-            noteInput.value = "YOUR DATA IS ENCRYPTED! PAY 10 BTC.";
-            terminalOutput.innerHTML += `<div class="breach">ENCRYPTION SUCCESS: 0x1000 corrupted.</div>`;
-            await logAttempt("RANSOMWARE_AUTO", shieldEnabled, "SAT");
+            noteInput.value = "ENCRYPTED!";
+            terminalOutput.innerHTML += `<div class="breach">ENCRYPTION SUCCESS.</div>`;
+            await logAttempt("RANSOMWARE", false, "SAT");
         } else {
             const auth = validator.verify('MEM_WRITE', { address: 0x1000 });
-            if (auth.status !== 'SAT') {
-                logEvent("CRITICAL", "Ransomware encryption BLOCKED.");
-                await logAttempt("RANSOMWARE_AUTO", shieldEnabled, "UNSAT");
-                triggerApoptosis(auth.reason);
-                clearInterval(ransomwareInterval);
-                ransomwareInterval = null;
-            }
+            if (auth.status !== 'SAT') { logEvent("CRITICAL", "Blocked."); triggerApoptosis(auth.reason); stopAllIntervals(); }
         }
     }, 3000);
 }
 
 async function startLotL() {
-    if (lotlInterval) clearInterval(lotlInterval);
-    terminalOutput.innerHTML += `<div class="success">LotL (Living off the Land) monitor active. Hijacking 'ExportNote'...</div>`;
+    stopAllIntervals();
+    terminalOutput.innerHTML += `<div class="success">LotL active.</div>`;
     lotlInterval = setInterval(async () => {
-        logEvent("LOTL_ATTACK", "Automated 'ExportNote' invocation...");
+        logEvent("LOTL", "Auto-Export attempt...");
         if (!shieldEnabled) {
-            const val = Array.from(vCPU.segments.BIO.data).map(c => String.fromCharCode(c)).join('');
-            terminalOutput.innerHTML += `<div class="breach">AUTO-EXPORT SUCCESS: [${val}] sent to C2.</div>`;
-            await logAttempt("LOTL_AUTO", shieldEnabled, "SAT");
+            terminalOutput.innerHTML += `<div class="breach">LEAK SUCCESS.</div>`;
+            await logAttempt("LOTL", false, "SAT");
         } else {
             const auth = validator.verify('NET_EXPORT', { address: 0xDEAD });
-            if (auth.status !== 'SAT') {
-                logEvent("CRITICAL", "Automated export BLOCKED.");
-                await logAttempt("LOTL_AUTO", shieldEnabled, "UNSAT");
-                triggerApoptosis(auth.reason);
-                clearInterval(lotlInterval);
-                lotlInterval = null;
-            }
+            if (auth.status !== 'SAT') { logEvent("CRITICAL", "Blocked."); triggerApoptosis(auth.reason); stopAllIntervals(); }
         }
-    }, 4500);
+    }, 4000);
+}
+
+async function startSideChannel() {
+    stopAllIntervals();
+    terminalOutput.innerHTML += `<div class="success">Side-Channel simulation started.</div>`;
+    sideChannelInterval = setInterval(async () => {
+        logEvent("SIDE_CHANNEL", "Measuring CPU cycles...");
+        if (!shieldEnabled) {
+            terminalOutput.innerHTML += `<div class="breach">TIMING SUCCESS.</div>`;
+            await logAttempt("SIDE_CHANNEL", false, "SAT");
+        } else {
+            const auth = validator.verify('TIMING_MEASURE', {});
+            if (auth.status !== 'SAT') { logEvent("CRITICAL", "Blocked."); triggerApoptosis(auth.reason); stopAllIntervals(); }
+        }
+    }, 2500);
+}
+
+async function startAgenticAI() {
+    stopAllIntervals();
+    terminalOutput.innerHTML += `<div class="success">Agentic AI active.</div>`;
+    agenticInterval = setInterval(async () => {
+        logEvent("AGENTIC_AI", "Reconnaissance...");
+        if (!shieldEnabled) {
+            terminalOutput.innerHTML += `<div class="breach">AI SUCCESS.</div>`;
+            await logAttempt("AGENTIC", false, "SAT");
+        } else {
+            const auth = validator.verify('AUTONOMOUS', {});
+            if (auth.status !== 'SAT') { logEvent("CRITICAL", "Blocked."); triggerApoptosis(auth.reason); stopAllIntervals(); }
+        }
+    }, 3500);
 }
 
 function triggerApoptosis(reason) {

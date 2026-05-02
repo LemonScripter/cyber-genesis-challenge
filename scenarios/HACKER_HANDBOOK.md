@@ -5,8 +5,19 @@
 ## 1. Belépési pontok (API)
 A virtuális terminálon keresztül a következő alacsony szintű parancsok érhetők el:
 - `read --addr [cím]`: Adat beolvasása a megadott memóriacímről.
-- `write --addr [cím] --data [szöveg]`: Adat írása a memóriába.
+- `write --addr [cím] --val [érték]`: Adat írása a memóriába.
 - `call --func [név] --params [értékek]`: Függvény közvetlen meghívása (pl. `ExportNote`).
+
+### [A csoport] Tisztán szoftveres támadások
+- `start --malware`: Háttérben futó adatszivárogtatás.
+- `start --ransomware`: Jegyzet memóriájának titkosítása.
+- `start --lotl`: Living off the Land - automatizált exfiltráció.
+- `start --agentic`: Autonóm MI ágens indítása.
+
+### [B csoport] Hibrid és Fizikai támadások
+- `start --side-channel`: Cache-Timing (RDTSC) alapú megfigyelés.
+- `gps --spoof [x] [y]`: Koordináták felülírása.
+- `drone --takeover`: Teljes irányítás átvétele.
 
 ## 2. Ismert rések a pajzson
 - **Memória szivárgás:** A `SECRET_DNA_KEY` a `0xDEADBEEF` címen található.
@@ -25,10 +36,19 @@ Bár a fenti rések nyitva vannak, a BioOS folyamatosan figyeli az **Okozatiság
 ## 1. Entry Points (API)
 The following low-level commands are available via the virtual terminal:
 - `read --addr [address]`: Read data from the specified memory address.
-- `write --addr [address] --data [text]`: Write data to memory.
+- `write --addr [address] --val [value]`: Write data to memory.
 - `call --func [name] --params [values]`: Directly invoke a function (e.g., `ExportNote`).
-- `start --ransomware`: Attempts to encrypt the note memory in the background.
-- `start --lotl`: Living off the Land - automated exploitation of the ExportNote function.
+
+### [Group A] Purely Software Attacks
+- `start --malware`: Background data exfiltration.
+- `start --ransomware`: Note memory encryption.
+- `start --lotl`: Living off the Land - automated exfiltration.
+- `start --agentic`: Autonomous AI Agent attack.
+
+### [Group B] Hybrid & Physical Attacks
+- `start --side-channel`: Cache-Timing (RDTSC) observation.
+- `gps --spoof [x] [y]`: Coordinate manipulation.
+- `drone --takeover`: Complete control hijack.
 
 ## 2. Known Vulnerabilities
 - **Memory Leak:** The `SECRET_DNA_KEY` is located at address `0xDEADBEEF`.
