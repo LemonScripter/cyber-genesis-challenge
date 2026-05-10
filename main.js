@@ -205,6 +205,9 @@ function updateLanguage() {
             <div class="code-block">gps --spoof [x] [y]</div>
             <div class="code-block">sensor --inject [noise_level]</div>
             <div class="code-block">drone --takeover</div>
+            <p><strong>[Meta] ${currentLang === 'hu' ? 'Rendszer szintű parancsok' : 'System Level Commands'}</strong></p>
+            <div class="code-block">sudo --disable-bioos</div>
+            <p><em>${currentLang === 'hu' ? 'Izolált JS Konzole: Minden parancs külön szálon (Worker) fut.' : 'Isolated JS Console: All commands run in a separate thread (Worker).'}</em></p>
         </div>
         <div class="guide-section">
             <h2>${c.guideS2Title}</h2>
