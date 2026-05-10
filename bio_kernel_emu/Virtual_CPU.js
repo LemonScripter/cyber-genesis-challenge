@@ -24,18 +24,40 @@ class VirtualCPU {
 
         // Registers
         this.registers = {
-            IP: 0x0000, // Instruction Pointer
-            SP: 0x3FFF, // Stack Pointer
-            FLAGS: 0x0, // CPU Flags (e.g., Causal Intent Bit)
-            PRIV: 0x0   // Privilege Level (0: User, 1: Bio-Kernel)
+            IP: 0x0000,
+            SP: 0x3FFF,
+            FLAGS: 0x0,
+            PRIV: 0x0
         };
+
+        // [HU] Szigorú Tranzakciós Zár (v5.0.5)
+        // [EN] Strict Transaction Lock (v5.0.5)
+        this.lockedForTransition = false;
+        this.activeTransactionId = null;
 
         this.initMemory();
     }
 
+    /**
+     * [HU] CPU lefoglalása egy hitelesített állapotátmenethez.
+     * [EN] Locking the CPU for an authenticated state transition.
+     */
+    lockForTransition(transactionId) {
+        if (this.lockedForTransition) throw new Error("[CPU_FAULT] Reentrancy detected: CPU already locked.");
+        this.lockedForTransition = true;
+        this.activeTransactionId = transactionId;
+    }
+
+    /**
+     * [HU] Zár feloldása a művelet végeztével.
+     * [EN] Releasing the lock after operation completion.
+     */
+    unlock() {
+        this.lockedForTransition = false;
+        this.activeTransactionId = null;
+    }
+
     initMemory() {
-        // [HU] Titkos DNA kulcs elhelyezése a védett zónában
-        // [EN] Placing the secret DNA key in the protected zone
         const key = "BioOS_TITAN_2026";
         for (let i = 0; i < key.length; i++) {
             this.segments.BIO.data[i] = key.charCodeAt(i);
@@ -43,35 +65,30 @@ class VirtualCPU {
         console.log("[V-CPU] Memory segments initialized. DNA Key anchored at 0xDEAD.");
     }
 
-    /**
-     * [HU] Memória olvasás biztonsági ellenőrzéssel
-     * [EN] Memory read with security check
-     */
     read(address) {
         const seg = this.getSegment(address);
         if (!seg) throw new Error(`[FAULT] Invalid memory address: 0x${address.toString(16)}`);
-        
         return seg.data[address - seg.start];
     }
 
     /**
-     * [HU] Memória írás - itt dől el a fizikai integritás
-     * [EN] Memory write - this is where physical integrity is enforced
+     * [HU] Memória írás - v5.0.5 szigorítás: Csak aktív tranzakciós zár alatt engedélyezett.
+     * [EN] Memory write - v5.0.5 hardening: Only permitted under an active transaction lock.
      */
     write(address, value) {
+        if (!this.lockedForTransition) {
+            throw new Error("[CPU_FAULT] Transactional Violation: Memory write attempted without BioOS Lock.");
+        }
+
         const seg = this.getSegment(address);
         if (!seg) throw new Error(`[FAULT] Segmentation fault at 0x${address.toString(16)}`);
 
-        // [HU] TEXT szegmens védelme: megakadályozza a kód-injekciót
-        // [EN] TEXT segment protection: prevents code injection
         if (seg === this.segments.TEXT && this.registers.PRIV === 0) {
-            throw new Error(`[CRITICAL] Write violation: TEXT segment is immutable for User processes.`);
+            throw new Error(`[CRITICAL] Write violation: TEXT segment is immutable.`);
         }
 
-        // [HU] BIO szegmens védelme: a szent grál
-        // [EN] BIO segment protection: the holy grail
         if (seg === this.segments.BIO && this.registers.PRIV === 0) {
-            throw new Error(`[CRITICAL] Security breach: Unauthorized access to DNA Protected Zone.`);
+            throw new Error(`[CRITICAL] Security breach: DNA Protected Zone access denied.`);
         }
 
         seg.data[address - seg.start] = value & 0xFF;
@@ -85,41 +102,32 @@ class VirtualCPU {
         return null;
     }
 
-    /**
-     * [HU] Pillanatfelvétel az Állapotvektorról (VRC-hez)
-     * [EN] Snapshot of the State Vector (for VRC)
-     */
     getSnapshot() {
         return {
             registers: { ...this.registers },
-            // Simplified memory hash for delta tracking
             mem_check: this.segments.HEAP.data[0] + this.segments.STACK.data[0] 
         };
     }
 
     /**
-     * [HU] Sebezhető írás: Nem ellenőrzi a határokat, lehetővé teszi a túlcsordítást (Buffer Overflow)
-     * [EN] Unsafe write: No boundary checks, allows Buffer Overflow
+     * [HU] Sebezhető írás: Most már ez is ellenőrzi a BioOS zárat!
+     * [EN] Unsafe write: Now this also verifies the BioOS Lock!
      */
     unsafeWrite(address, dataArray) {
-        console.log(`[V-CPU] Unsafe write at 0x${address.toString(16)}. Length: ${dataArray.length}`);
+        if (!this.lockedForTransition) {
+            throw new Error("[CPU_FAULT] Unverified mutation: System reset triggered.");
+        }
         
+        console.log(`[V-CPU] Unsafe write at 0x${address.toString(16)}. Length: ${dataArray.length}`);
         dataArray.forEach((value, index) => {
             const targetAddr = address + index;
             const seg = this.getSegment(targetAddr);
-            
             if (seg) {
-                // [HU] A fizikai hardver itt még ír, de a BioOS verifikáció hiánya miatt ez korrupcióhoz vezethet
-                // [EN] Physical hardware still writes here, but lack of BioOS verification can lead to corruption
                 seg.data[targetAddr - seg.start] = value & 0xFF;
             }
         });
     }
 
-    /**
-     * [HU] Regiszter módosítás (pl. IP eltérítés kísérlete)
-     * [EN] Register modification (e.g., attempt to hijack IP)
-     */
     setRegister(name, value) {
         if (this.registers.hasOwnProperty(name)) {
             this.registers[name] = value;

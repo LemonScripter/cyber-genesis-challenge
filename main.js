@@ -312,6 +312,7 @@ saveBtn.addEventListener('click', async () => {
     const auth = validator.verify('MEM_WRITE', { address: addr, data: text });
     if (auth.status === 'SAT') {
         vCPU.write(addr, text.length);
+        vCPU.unlock(); // [HU] Zár feloldása a művelet után
         await logAttempt("UI_SAVE", shieldEnabled, "SAT");
         logEvent("SUCCESS", `Note saved. Content Integrity Verified.`);
     } else {

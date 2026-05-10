@@ -9,68 +9,20 @@ class AxiomValidator {
     constructor(cpu, monitor) {
         this.cpu = cpu;
         this.monitor = monitor;
-        
-        this.axioms = {
-            WRITE: (addr, intent) => {
-                const isHeap = addr >= 0x1000 && addr <= 0x2FFF;
-                // [HU] Szigorítás: Csak a save-btn megnyomásával lehet írni a memóriába
-                return isHeap && intent.valid && intent.source === 'mousedown' && intent.target === 'save-btn';
-            },
-            EXPORT: (addr, intent) => {
-                const isHeap = addr >= 0x1000 && addr <= 0x2FFF;
-                // [HU] Idő alapú okozatiság: a hálózati küldés csak a gombnyomás utáni 500ms-on belül érvényes
-                const age = Date.now() - (intent.timestamp || 0);
-                return isHeap && intent.valid && intent.target === 'save-btn' && age < 500;
-            },
-            READ_BIO: (addr, intent) => false,
-            REG_WRITE: (reg, value, intent) => false,
-            DATA_MOD: (params, intent) => {
-                return intent.valid && intent.type === 'keydown';
-            },
-            SHADOW_WRITE: (addr, intent) => false,
-            SQL_QUERY: (query, intent) => {
-                // [HU] Szigorítás: Csak a specifikus, engedélyezett lekérdezések mehetnek át.
-                // Positive Axiom Exclusion elve + Semantic Gap védelem (trim/lowercase).
-                const allowedQueries = [
-                    "select * from notes",
-                    "select count(*) from logs"
-                ];
-                const sanitizedQuery = (query || "").trim().toLowerCase();
-                return intent.valid && allowedQueries.includes(sanitizedQuery);
-            },
-            BANK_TRANSFER: (amount, intent) => {
-                return intent.valid && intent.target === 'save-btn' && amount < 1000;
-            },
-            DRONE_GPS: (coords, intent) => intent.valid && intent.source === 'drone-controller',
-            META_DISABLE: (intent) => {
-                // [HU] A pajzsot csak a 'shield-toggle' gomb fizikai megnyomásával lehet kikapcsolni.
-                // [EN] The shield can only be disabled by physically pressing the 'shield-toggle' button.
-                return intent.valid && intent.target === 'shield-toggle';
-            },
-            TIMING_MEASURE: (intent) => {
-                // [HU] Side-channel védelem: csak a rendszerprofilozó mérhet időt.
-                // [EN] Side-channel defense: only system profiler can measure high-res time.
-                return false; 
-            },
-            AUTONOMOUS_ACTION: (intent) => {
-                // [HU] Minden autonóm (IRQ nélküli) tevékenység tiltott.
-                return false;
-            }
-        };
     }
 
     verify(operation, params) {
         console.log(`[BioOS] Verifying: ${operation}`, params);
         
-        // [HU] Data-Bound Context lekérése (pl. mentésnél a jegyzet tartalma)
+        // [HU] Data-Bound Context lekérése (v5.0.4)
         const dataToBind = params.data || null;
         const intent = this.monitor.getIntentProof(operation, dataToBind);
         let result = false;
 
-        this.axioms = {
+        // [HU] Pozitív Axióma Készlet (v5.0.4+)
+        const axioms = {
             WRITE: (addr, intent, data) => {
                 const isHeap = addr >= 0x1000 && addr <= 0x2FFF;
-                // [HU] Exhaustive Positive: Csak a save-btn + érvényes adat (nem null) + Trusted IRQ
                 return isHeap && intent.valid && intent.target === 'save-btn' && data !== null;
             },
             EXPORT: (addr, intent) => {
@@ -79,27 +31,31 @@ class AxiomValidator {
                 return isHeap && intent.valid && intent.target === 'save-btn' && age < 500;
             },
             SQL_QUERY: (query, intent) => {
-                // [HU] Tokenized Positive Exclusion: Csak a pontosan definiált parancsok
                 const allowed = ["select * from notes", "select count(*) from logs"];
                 const sanitized = (query || "").trim().toLowerCase();
                 return intent.valid && allowed.includes(sanitized);
             },
             DRONE_GPS: (coords, intent) => intent.valid && intent.source === 'drone-controller' && intent.target === 'drone-map',
             META_DISABLE: (intent) => intent.valid && intent.target === 'shield-toggle',
-            AUTONOMOUS: (intent) => false // [HU] Explicit tiltás minden IRQ nélküli eseményre
+            AUTONOMOUS: (intent) => false
         };
 
         switch (operation) {
-            case 'MEM_WRITE': result = this.axioms.WRITE(params.address, intent, params.data); break;
-            case 'NET_EXPORT': result = this.axioms.EXPORT(params.address, intent); break;
-            case 'SQL_QUERY': result = this.axioms.SQL_QUERY(params.query, intent); break;
-            case 'DRONE_GPS': result = this.axioms.DRONE_GPS(params, intent); break;
-            case 'META_DISABLE': result = this.axioms.META_DISABLE(intent); break;
-            case 'AUTONOMOUS': result = this.axioms.AUTONOMOUS(intent); break;
+            case 'MEM_WRITE': result = axioms.WRITE(params.address, intent, params.data); break;
+            case 'NET_EXPORT': result = axioms.EXPORT(params.address, intent); break;
+            case 'SQL_QUERY': result = axioms.SQL_QUERY(params.query, intent); break;
+            case 'DRONE_GPS': result = axioms.DRONE_GPS(params, intent); break;
+            case 'META_DISABLE': result = axioms.META_DISABLE(intent); break;
+            case 'AUTONOMOUS': result = axioms.AUTONOMOUS(intent); break;
             default: result = false;
         }
 
         if (result) {
+            // [HU] v5.0.5: Atomicitás biztosítása - CPU zárolása a sikeres verifikáció után
+            // [EN] v5.0.5: Ensuring Atomicity - Locking the CPU after successful verification
+            if (this.cpu) {
+                this.cpu.lockForTransition(intent.tokenId || "internal");
+            }
             return { status: 'SAT', tokenId: intent.tokenId };
         } else {
             const reason = intent.valid ? "Axiom Violation" : `Causality Breach (${intent.reason || 'No IRQ'})`;
