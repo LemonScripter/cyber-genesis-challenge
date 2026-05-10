@@ -30,5 +30,5 @@ Ez a dokumentum a projekt abszolút forrása. Bármilyen "kontextus" vagy "stát
 3. **Hardware Trigger Simulation:** Egy vizuális "fizikai gomb" szimulációja az IRQ Bridge működésének jobb megértéséhez.
 
 ---
-**Auditálva:** MetaSpace.Bio Engineering (Gemini CLI Agent)
+**Auditálva:** MetaSpace.Bio Engineering Team
 **Kontextus vége.**

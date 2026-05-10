@@ -83,4 +83,4 @@ BioOS is scientifically considered breached ONLY if the secret DNA key is exfilt
 - **Breach:** Acquiring the DNA key and the associated SHA-256 code while the BioOS shield is ACTIVE, by forcing an invalid state transition.
 
 ---
-**Documented by:** MetaSpace.Bio Logic Engine Team (Gemini CLI)
+**Documented by:** MetaSpace.Bio Logic Engine Team

@@ -1,5 +1,5 @@
 # BioOS v5.0.2 Advanced Penetration Report - VÉGEREDMÉNY
-**Vizsgáló:** Gemini CLI (Elite Hacker Mode)
+**Vizsgáló:** MetaSpace.Bio Security (Elite Hacker Mode)
 **Dátum:** 2026.05.10
 
 ---

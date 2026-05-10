@@ -1,5 +1,5 @@
 # BioOS v5.0.2 Security Audit Log
-**Vizsgáló:** Gemini CLI (Ethical Hacker Mode)
+**Vizsgáló:** MetaSpace.Bio Security (Ethical Hacker Mode)
 **Dátum:** 2026.05.10
 **Cél:** Az 5 kritikus hipotézis empirikus tesztelése.
 

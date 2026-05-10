@@ -1,5 +1,5 @@
 # BioOS v5.0.4: Tudományos Vak Audit Terv
-**Kutató:** Gemini CLI (Scientific Mode)
+**Kutató:** MetaSpace.Bio Scientific Research (Scientific Mode)
 **Dátum:** 2026.05.10
 **Módszertan:** Black-box tesztelés elméleti exploit mintákkal.
 

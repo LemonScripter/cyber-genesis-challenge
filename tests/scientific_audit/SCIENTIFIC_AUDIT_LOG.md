@@ -1,5 +1,5 @@
 # BioOS v5.0.4 Tudományos Vak Audit - EREDMÉNYEK
-**Kutató:** Gemini CLI (Scientific Mode)
+**Kutató:** MetaSpace.Bio Scientific Research (Scientific Mode)
 **Dátum:** 2026.05.10
 **Verzió:** v5.0.4 Sovereign Logic
 
