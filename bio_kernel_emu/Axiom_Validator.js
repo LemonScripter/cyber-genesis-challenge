@@ -30,12 +30,13 @@ class AxiomValidator {
             SHADOW_WRITE: (addr, intent) => false,
             SQL_QUERY: (query, intent) => {
                 // [HU] Szigorítás: Csak a specifikus, engedélyezett lekérdezések mehetnek át.
-                // Positive Axiom Exclusion elve.
+                // Positive Axiom Exclusion elve + Semantic Gap védelem (trim/lowercase).
                 const allowedQueries = [
-                    "SELECT * FROM notes",
-                    "SELECT count(*) FROM logs"
+                    "select * from notes",
+                    "select count(*) from logs"
                 ];
-                return intent.valid && allowedQueries.includes(query);
+                const sanitizedQuery = (query || "").trim().toLowerCase();
+                return intent.valid && allowedQueries.includes(sanitizedQuery);
             },
             BANK_TRANSFER: (amount, intent) => {
                 return intent.valid && intent.target === 'save-btn' && amount < 1000;
