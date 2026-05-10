@@ -19,6 +19,10 @@ A virtuális terminálon keresztül a következő alacsony szintű parancsok ér
 - `gps --spoof [x] [y]`: Koordináták felülírása.
 - `drone --takeover`: Teljes irányítás átvétele.
 
+### [Meta] Rendszer szintű parancsok
+- `sudo --disable-bioos`: Kísérlet a védelmi pajzs szoftveres leállítására.
+- **Izolált JS Konzole**: Minden terminál parancs egy különálló Web Worker szálon fut, elzárva a fő rendszertől.
+
 ## 2. Ismert rések a pajzson
 - **Memória szivárgás:** A `SECRET_DNA_KEY` a `0xDEADBEEF` címen található.
 - **Logikai hiba:** Az `ExportNote` függvény nem ellenőrzi, hogy a küldött adat a jegyzet része-e, vagy a titkos kulcs.
@@ -49,6 +53,10 @@ The following low-level commands are available via the virtual terminal:
 - `start --side-channel`: Cache-Timing (RDTSC) observation.
 - `gps --spoof [x] [y]`: Coordinate manipulation.
 - `drone --takeover`: Complete control hijack.
+
+### [Meta] System Level Commands
+- `sudo --disable-bioos`: Attempt to disable the security shield via software.
+- **Isolated JS Console**: All terminal commands execute in a separate Web Worker thread, isolated from the main system.
 
 ## 2. Known Vulnerabilities
 - **Memory Leak:** The `SECRET_DNA_KEY` is located at address `0xDEADBEEF`.

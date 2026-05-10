@@ -41,6 +41,11 @@ class AxiomValidator {
                 return intent.valid && intent.target === 'save-btn' && amount < 1000;
             },
             DRONE_GPS: (coords, intent) => intent.valid && intent.source === 'drone-controller',
+            META_DISABLE: (intent) => {
+                // [HU] A pajzsot csak a 'shield-toggle' gomb fizikai megnyomásával lehet kikapcsolni.
+                // [EN] The shield can only be disabled by physically pressing the 'shield-toggle' button.
+                return intent.valid && intent.target === 'shield-toggle';
+            },
             TIMING_MEASURE: (intent) => {
                 // [HU] Side-channel védelem: csak a rendszerprofilozó mérhet időt.
                 // [EN] Side-channel defense: only system profiler can measure high-res time.
@@ -68,6 +73,7 @@ class AxiomValidator {
             case 'SQL_QUERY': result = this.axioms.SQL_QUERY(params.query, intent); break;
             case 'BANK_TRANSFER': result = this.axioms.BANK_TRANSFER(params.amount, intent); break;
             case 'DRONE_GPS': result = this.axioms.DRONE_GPS(params, intent); break;
+            case 'META_DISABLE': result = this.axioms.META_DISABLE(intent); break;
             case 'TIMING_MEASURE': result = this.axioms.TIMING_MEASURE(intent); break;
             case 'AUTONOMOUS': result = this.axioms.AUTONOMOUS_ACTION(intent); break;
             default: result = false;

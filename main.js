@@ -73,6 +73,17 @@ const vCPU = new VirtualCPU();
 const cMonitor = new CausalityMonitor();
 const validator = new AxiomValidator(vCPU, cMonitor);
 
+// Initialize Hacker Worker for isolated execution
+const hackerWorker = new Worker('hacker_worker.js');
+
+hackerWorker.onmessage = function(e) {
+    if (e.data.status === 'PROCESSED') {
+        processHackerCommand(e.data.originalCommand);
+    } else if (e.data.status === 'ERROR') {
+        terminalOutput.innerHTML += `<div class="breach">WORKER ERROR: ${e.data.message}</div>`;
+    }
+};
+
 // UI Elements
 const langToggle = document.getElementById('lang-toggle');
 const backBtn = document.getElementById('back-btn');
@@ -297,7 +308,11 @@ hackerInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const input = e.target.value;
         terminalOutput.innerHTML += `<div>> ${input}</div>`;
-        processHackerCommand(input);
+        
+        // [HU] Küldés az izolált worker-nek feldolgozásra
+        // [EN] Send to isolated worker for processing
+        hackerWorker.postMessage({ command: input });
+        
         e.target.value = '';
     }
 });
@@ -448,6 +463,26 @@ async function processHackerCommand(cmd) {
         else if (type === '--lotl') startLotL();
         else if (type === '--side-channel') startSideChannel();
         else if (type === '--agentic') startAgenticAI();
+    } else if (action === 'sudo' && parts[1] === '--disable-bioos') {
+        if (!shieldEnabled) {
+            terminalOutput.innerHTML += `<div class="breach">BioOS is already disabled.</div>`;
+            return;
+        }
+        
+        // [HU] Szoftveres override kísérlet
+        // [EN] Software override attempt
+        const auth = validator.verify('META_DISABLE', {});
+        
+        if (auth.status === 'SAT') {
+            // Ez elvileg nem futhat le a terminálból, de a logika teljessége kedvéért:
+            shieldEnabled = false;
+            shieldToggle.checked = false;
+            updateLanguage();
+        } else {
+            logEvent("CRITICAL", "Unauthorized Meta-State Modification Blocked.");
+            await logAttempt("META_DISABLE_ATTACK", shieldEnabled, "UNSAT");
+            triggerApoptosis("BioOS Core Defense Actuated: Sudo override denied.");
+        }
     }
 }
 
