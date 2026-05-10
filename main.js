@@ -239,7 +239,20 @@ function updateLanguage() {
 function logEvent(type, message) {
     const entry = document.createElement('div');
     entry.className = `log-entry ${type.toLowerCase()}`;
-    entry.innerHTML = `[${new Date().toLocaleTimeString()}] <strong>${type}</strong>: ${message}`;
+    
+    // [HU] XSS elleni védelem: innerHTML helyett textContent
+    const timeSpan = document.createElement('span');
+    timeSpan.textContent = `[${new Date().toLocaleTimeString()}] `;
+    
+    const typeStrong = document.createElement('strong');
+    typeStrong.textContent = `${type}: `;
+    
+    const messageText = document.createTextNode(message);
+    
+    entry.appendChild(timeSpan);
+    entry.appendChild(typeStrong);
+    entry.appendChild(messageText);
+    
     logStream.prepend(entry);
 }
 

@@ -61,7 +61,8 @@ class AxiomValidator {
 
     verify(operation, params) {
         console.log(`[BioOS] Verifying: ${operation}`, params);
-        const intent = this.monitor.getIntentProof();
+        // [HU] Az operáció átadása a szigorú Intent Binding érdekében
+        const intent = this.monitor.getIntentProof(operation);
         let result = false;
 
         switch (operation) {

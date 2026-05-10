@@ -11,65 +11,60 @@
 class CausalityMonitor {
     constructor() {
         this.lastToken = null;
-        this.CAUSALITY_WINDOW_MS = 250; // [HU] 250 ms-os időablak a szándékhoz
+        this.CAUSALITY_WINDOW_MS = 250;
         this.initListeners();
     }
 
     initListeners() {
-        // [HU] Figyeljük a globális interakciókat
-        // [EN] Listen for global interactions
         ['mousedown', 'keydown', 'touchstart'].forEach(eventType => {
             window.addEventListener(eventType, (e) => {
                 if (e.isTrusted) {
                     this.generateToken(eventType, e);
-                } else {
-                    console.warn(`[BioOS] Synthetic event rejected: ${eventType}`);
                 }
             }, true);
         });
     }
 
     generateToken(type, event) {
+        // [HU] performance.now() használata a Date.now() helyett az időmanipuláció ellen
         this.lastToken = {
             id: Math.random().toString(36).substr(2, 9),
             type: type,
-            timestamp: Date.now(),
+            timestamp: performance.now(),
             target: event.target.id || "anonymous_element",
-            consumed: false
+            consumed: false,
+            boundOperation: null // [HU] Összekapcsolás egy konkrét művelettel
         };
-        console.log(`[BioOS] Causal Token Generated: ${this.lastToken.id} (Source: ${type})`);
     }
 
-    /**
-     * [HU] Ellenőrzi, hogy van-e érvényes, fel nem használt szándék-token.
-     * [EN] Checks if there is a valid, unconsumed intent token.
-     */
-    validateIntent() {
-        if (!this.lastToken) return false;
+    validateIntent(requestedOperation = null) {
+        if (!this.lastToken) return { valid: false, reason: "NO_TOKEN" };
         
-        const now = Date.now();
+        const now = performance.now();
         const age = now - this.lastToken.timestamp;
 
-        // [HU] Ellenőrizzük az időablakot és a felhasználtságot
-        // [EN] Verify window and consumption status
-        if (age <= this.CAUSALITY_WINDOW_MS && !this.lastToken.consumed) {
-            this.lastToken.consumed = true; // [HU] Egy token csak egyszer használható fel
-            return {
-                valid: true,
-                tokenId: this.lastToken.id,
-                source: this.lastToken.type
-            };
+        if (this.lastToken.consumed) return { valid: false, reason: "ALREADY_CONSUMED" };
+        if (age > this.CAUSALITY_WINDOW_MS) return { valid: false, reason: "EXPIRED" };
+
+        // [HU] Logikai szigorítás: Egy token csak egyféle művelethez használható fel (Intent Consistency)
+        if (this.lastToken.boundOperation && this.lastToken.boundOperation !== requestedOperation) {
+            return { valid: false, reason: "INTENT_MISMATCH" };
         }
 
-        return { valid: false, reason: age > this.CAUSALITY_WINDOW_MS ? "EXPIRED" : "ALREADY_CONSUMED" };
+        this.lastToken.consumed = true;
+        this.lastToken.boundOperation = requestedOperation;
+        
+        return {
+            valid: true,
+            tokenId: this.lastToken.id,
+            source: this.lastToken.type,
+            target: this.lastToken.target,
+            timestamp: this.lastToken.timestamp
+        };
     }
 
-    /**
-     * [HU] Manuális token-lekérdezés a Z3 Gatekeeper számára
-     * [EN] Manual token query for the Z3 Gatekeeper
-     */
-    getIntentProof() {
-        return this.validateIntent();
+    getIntentProof(requestedOperation = null) {
+        return this.validateIntent(requestedOperation);
     }
 }
 
