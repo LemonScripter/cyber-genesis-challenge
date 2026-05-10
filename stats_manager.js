@@ -22,7 +22,7 @@ export async function logAttempt(cmd, shield, result) {
     }
 }
 
-export async function getAttempts() {
+export async function getStats() {
     try {
         const response = await fetch('/.netlify/functions/sync_stats');
         if (response.ok) {
@@ -31,7 +31,7 @@ export async function getAttempts() {
     } catch (e) {
         console.error("[BioOS] Error fetching global stats.");
     }
-    return [];
+    return { total: 0, blocked: 0, recent: [] };
 }
 
 export async function getSecureProof(data) {

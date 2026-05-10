@@ -31,12 +31,19 @@ exports.handler = async (event, context) => {
         `);
 
         if (event.httpMethod === "GET") {
-            const res = await client.query('SELECT time, cmd, shield, result FROM attempts ORDER BY id DESC LIMIT 50');
+            const totalRes = await client.query('SELECT COUNT(*) FROM attempts');
+            const blockedRes = await client.query("SELECT COUNT(*) FROM attempts WHERE result = 'UNSAT'");
+            const recentRes = await client.query('SELECT time, cmd, shield, result FROM attempts ORDER BY id DESC LIMIT 50');
+            
             await client.end();
             return {
                 statusCode: 200,
                 headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-                body: JSON.stringify(res.rows)
+                body: JSON.stringify({
+                    total: parseInt(totalRes.rows[0].count),
+                    blocked: parseInt(blockedRes.rows[0].count),
+                    recent: recentRes.rows
+                })
             };
         }
 

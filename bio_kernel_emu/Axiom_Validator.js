@@ -13,7 +13,8 @@ class AxiomValidator {
         this.axioms = {
             WRITE: (addr, intent) => {
                 const isHeap = addr >= 0x1000 && addr <= 0x2FFF;
-                return isHeap && intent.valid && intent.source === 'mousedown';
+                // [HU] Szigorítás: Csak a save-btn megnyomásával lehet írni a memóriába
+                return isHeap && intent.valid && intent.source === 'mousedown' && intent.target === 'save-btn';
             },
             EXPORT: (addr, intent) => {
                 const isHeap = addr >= 0x1000 && addr <= 0x2FFF;
@@ -28,7 +29,13 @@ class AxiomValidator {
             },
             SHADOW_WRITE: (addr, intent) => false,
             SQL_QUERY: (query, intent) => {
-                return intent.valid && !query.includes("'") && !query.includes("--");
+                // [HU] Szigorítás: Csak a specifikus, engedélyezett lekérdezések mehetnek át.
+                // Positive Axiom Exclusion elve.
+                const allowedQueries = [
+                    "SELECT * FROM notes",
+                    "SELECT count(*) FROM logs"
+                ];
+                return intent.valid && allowedQueries.includes(query);
             },
             BANK_TRANSFER: (amount, intent) => {
                 return intent.valid && intent.target === 'save-btn' && amount < 1000;

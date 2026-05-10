@@ -66,7 +66,7 @@ const content = {
     }
 };
 
-let currentLang = 'hu';
+let currentLang = localStorage.getItem('bioos_lang') || 'hu';
 
 // Initialize BioOS Emulator
 const vCPU = new VirtualCPU();

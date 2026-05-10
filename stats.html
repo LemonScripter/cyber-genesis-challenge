@@ -9,13 +9,22 @@
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; text-align: center; }
         .stat-box { border: 1px solid var(--axiom-cyan); padding: 1rem; background: rgba(0, 243, 255, 0.05); }
         .stat-val { font-size: 2rem; display: block; color: var(--axiom-cyan); }
-        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.8rem; }
+        .table-container { width: 100%; overflow-x: auto; margin-top: 1rem; border: 1px solid var(--matrix-green); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 600px; }
         th, td { border: 1px solid var(--matrix-green); padding: 0.5rem; text-align: left; }
         th { background: rgba(0, 255, 65, 0.1); color: var(--axiom-cyan); }
         .result-blocked { color: var(--matrix-green); }
         .result-bypassed { color: var(--breach-red); }
         .verifier-box { border: 1px solid var(--axiom-cyan); padding: 2rem; margin-top: 2rem; }
         #verify-result { margin-top: 1rem; padding: 1rem; display: none; }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .stat-val { font-size: 1.5rem; }
+            main { padding: 1rem; }
+            h1 { font-size: 1.2rem; }
+            .verifier-box { padding: 1rem; }
+        }
     </style>
 </head>
 <body>
@@ -46,19 +55,21 @@
         </div>
 
         <h2 id="recent-title">Legutóbbi próbálkozások</h2>
-        <table id="attempts-table">
-            <thead>
-                <tr>
-                    <th id="th-time">Idő</th>
-                    <th id="th-cmd">Parancs</th>
-                    <th id="th-shield">Pajzs</th>
-                    <th id="th-res">Eredmény</th>
-                </tr>
-            </thead>
-            <tbody id="attempts-body">
-                <!-- Data populated via JS -->
-            </tbody>
-        </table>
+        <div class="table-container">
+            <table id="attempts-table">
+                <thead>
+                    <tr>
+                        <th id="th-time">Idő</th>
+                        <th id="th-cmd">Parancs</th>
+                        <th id="th-shield">Pajzs</th>
+                        <th id="th-res">Eredmény</th>
+                    </tr>
+                </thead>
+                <tbody id="attempts-body">
+                    <!-- Data populated via JS -->
+                </tbody>
+            </table>
+        </div>
 
         <div class="verifier-box">
             <h2 id="verify-title">Kód hitelesítése</h2>
@@ -70,7 +81,7 @@
     </main>
 
     <script type="module">
-        import { getAttempts, verifyHash } from './stats_manager.js';
+        import { getStats, verifyHash } from './stats_manager.js';
 
         const statsContent = {
             hu: {
@@ -139,19 +150,19 @@
         }
 
         async function renderTable() {
-            const attempts = await getAttempts();
-            document.getElementById('total-attempts').innerText = attempts.length;
-            document.getElementById('blocked-attempts').innerText = attempts.filter(a => a.result === 'UNSAT').length;
+            const stats = await getStats();
+            document.getElementById('total-attempts').innerText = stats.total;
+            document.getElementById('blocked-attempts').innerText = stats.blocked;
 
             const body = document.getElementById('attempts-body');
             body.innerHTML = '';
             
-            if (attempts.length === 0) {
+            if (stats.recent.length === 0) {
                 body.innerHTML = '<tr><td colspan="4" style="text-align:center;">No data found.</td></tr>';
                 return;
             }
 
-            attempts.slice(0, 50).forEach(a => {
+            stats.recent.forEach(a => {
                 const row = body.insertRow();
                 row.insertCell(0).innerText = a.time;
                 row.insertCell(1).innerText = a.cmd;
