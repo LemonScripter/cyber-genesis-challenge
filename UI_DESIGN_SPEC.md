@@ -1,4 +1,22 @@
-# CYBER GENESIS CHALLENGE: Mobile-Friendly Matrix UI Design
+# [HU] CYBER GENESIS CHALLENGE: Mobilbarát Matrix UI Terv
+
+## 1. Vizuális Esztétika: "The Mobile Matrix"
+- **Színpaletta:** Tiszta fekete (#000000) háttér, "Bio-Green" (#00FF41) elsődleges szöveg, "Cyan-Axiom" (#00F3FF) a Z3 bizonyításokhoz.
+- **Tipográfia:** Monospaced betűtípusok (Courier New, Roboto Mono) minden elemhez a terminál hangulat megőrzése érdekében.
+- **Mikro-animációk:** Finom függőleges adatfolyamok a háttérben; "Glitch" effektus csak Apoptózis (sejtregeneráció) alatt.
+
+## 2. Reszponzív Elrendezés (Grid/Flexbox)
+- **Desktop:** Egymás melletti nézet.
+  - [ Bal: Victim App ] | [ Jobb: Hacker Terminal ]
+  - [ Alsó: BioOS Causal Monitor (Z3 Proof Tree) ]
+- **Mobil (Egy oszlop / Tabos elrendezés):**
+  - **Fejléc:** Tapadós cím + Nyelvváltó + DNA Státusz.
+  - **Fő nézet:** Tabos navigáció alul (ALKALMAZÁS | TERMINÁL | LOGOK).
+  - **Műveleti nézet:** Az "Alkalmazás" nagy, érintésbarát gombokat használ, hogy a hardveres IRQ-k egyértelműen elkülönüljenek a szövegbeviteltől.
+
+---
+
+# [EN] CYBER GENESIS CHALLENGE: Mobile-Friendly Matrix UI Design
 
 ## 1. Visual Aesthetic: "The Mobile Matrix"
 - **Color Palette:** Pure Black (#000000) background, "Bio-Green" (#00FF41) primary text, "Cyan-Axiom" (#00F3FF) for Z3 proofs.
