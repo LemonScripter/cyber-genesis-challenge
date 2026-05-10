@@ -1,4 +1,4 @@
-# BioOS Emulator: Logikai mag és architektúra
+# [HU] BioOS Emulátor: Logikai mag és architektúra
 
 Az emulátor a BioOS „digitális ikre” a böngészőben. Feladata, hogy szimulálja a Ring 0 szintű hardver-szoftver kapcsolatot, és érvényesítse a **Digitális Okozatisági Zártságot**.
 
@@ -34,7 +34,6 @@ Amikor egy parancs érkezik a terminálról:
 2.  **State Capture:** Pillanatfelvétel készül a virtuális memóriáról.
 3.  **Causality Trace:** A rendszer visszanéz a `Causal_Log`-ban: „Történt-e hardveres IRQ az elmúlt 100 ms-ban?”
 4.  **Verification:** A Z3 mag összeveti a szándékot a `.bio` fájllal.
-    - *Példa hacker támadásra:* A hacker parancsa `WIPE_DISK`. A `.bio` szerint ehhez `ADMIN_IRQ` kellene. Mivel a hacker terminálból jött, az IRQ hiányzik.
 5.  **Döntés:**
     - `SAT`: A parancs lefut (pl. a jegyzet mentése).
     - `UNSAT`: **Apoptózis fázis**. A rendszer piros riasztást ad, és visszatölti a memóriát az utolsó tiszta állapotból.
@@ -48,4 +47,53 @@ Azért, mert a hacker egy **logikai paradoxonnal** küzd.
 - A hardveres megszakítás azonban fizikailag a felhasználó kezében van (egér/billentyűzet). 
 - Mivel a hacker nem tudja fizikailag megnyomni a felhasználó gombját a távolból, a kódja örökre az „unverifiable” (igazolhatatlan) zónában marad.
 
-**Ez a technikai mélység megfelelő a folytatáshoz?** Ha igen, megkezdhetem a `bio_kernel_emu/` könyvtár belső moduljainak (a State Manager és az IRQ Bridge) logikai vázlatát.
+---
+
+# [EN] BioOS Emulator: Logic Core and Architecture
+
+The emulator is the "digital twin" of BioOS in the browser. Its task is to simulate the Ring 0 level hardware-software relationship and enforce **Digital Causal Closure**.
+
+---
+
+## 1. The Three Main Components
+
+The emulator consists of three strictly separated layers:
+
+### A) Virtual State Manager
+Responsible for the system's "memory". This is not a full x86 emulation, but an **Abstract State Vector**.
+- **Variables:** IP (Instruction Pointer), Stack, Heap (Memory), and the `Causal_Log` (event history).
+- **Operation:** Every command (whether a legal app function or a hacker exploit) attempts a state transition. The emulator holds this transition in a "suspended" state until verification.
+
+### B) Causal IRQ Bridge
+BioOS's most critical line of defense. This is the only component capable of generating **"Validated Intent"** (User Intent).
+- **Operation:** Monitors native browser events (e.g., `mousedown` on the SAVE button). 
+- **Security:** Only genuine UI interactions generate a `HARDWARE_IRQ` signal. If a hacker invokes a function via the terminal, it **does not generate an IRQ**, thus breaking the causal chain.
+
+### C) Z3 Gatekeeper
+A stripped-down, JS-based SMT solver logic that enforces `.bio` file axioms on state transitions.
+- **Input:** Current state + Requested state change + IRQ signals.
+- **Logic:** `Execution(Operation) <-> (Legal_by_Axiom(Operation) AND Supported_by_IRQ)`.
+- **Output:** `SAT` (Satisfiable) or `UNSAT` (Causal Breach).
+
+---
+
+## 2. The "Challenge" Execution Process
+
+When a command arrives from the terminal:
+
+1.  **Intercept:** The emulator stops the command at the "threshold".
+2.  **State Capture:** A snapshot of virtual memory is taken.
+3.  **Causality Trace:** The system checks the `Causal_Log`: "Was there a hardware IRQ in the last 100 ms?"
+4.  **Verification:** The Z3 core compares the intent with the `.bio` file.
+5.  **Decision:**
+    - `SAT`: The command executes (e.g., saving the note).
+    - `UNSAT`: **Apoptosis phase**. The system issues a red alert and restores memory from the last clean state.
+
+---
+
+## 3. Why is Protection 100% in this Model?
+
+Because the hacker faces a **logical paradox**. 
+- To run their code, they would need a hardware interrupt. 
+- However, the hardware interrupt is physically in the user's hand (mouse/keyboard). 
+- Since the hacker cannot physically press the user's button remotely, their code remains in the "unverifiable" zone forever.
