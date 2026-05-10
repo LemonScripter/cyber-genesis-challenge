@@ -61,23 +61,41 @@ class AxiomValidator {
 
     verify(operation, params) {
         console.log(`[BioOS] Verifying: ${operation}`, params);
-        // [HU] Az operáció átadása a szigorú Intent Binding érdekében
-        const intent = this.monitor.getIntentProof(operation);
+        
+        // [HU] Data-Bound Context lekérése (pl. mentésnél a jegyzet tartalma)
+        const dataToBind = params.data || null;
+        const intent = this.monitor.getIntentProof(operation, dataToBind);
         let result = false;
 
+        this.axioms = {
+            WRITE: (addr, intent, data) => {
+                const isHeap = addr >= 0x1000 && addr <= 0x2FFF;
+                // [HU] Exhaustive Positive: Csak a save-btn + érvényes adat (nem null) + Trusted IRQ
+                return isHeap && intent.valid && intent.target === 'save-btn' && data !== null;
+            },
+            EXPORT: (addr, intent) => {
+                const isHeap = addr >= 0x1000 && addr <= 0x2FFF;
+                const age = performance.now() - (intent.timestamp || 0);
+                return isHeap && intent.valid && intent.target === 'save-btn' && age < 500;
+            },
+            SQL_QUERY: (query, intent) => {
+                // [HU] Tokenized Positive Exclusion: Csak a pontosan definiált parancsok
+                const allowed = ["select * from notes", "select count(*) from logs"];
+                const sanitized = (query || "").trim().toLowerCase();
+                return intent.valid && allowed.includes(sanitized);
+            },
+            DRONE_GPS: (coords, intent) => intent.valid && intent.source === 'drone-controller' && intent.target === 'drone-map',
+            META_DISABLE: (intent) => intent.valid && intent.target === 'shield-toggle',
+            AUTONOMOUS: (intent) => false // [HU] Explicit tiltás minden IRQ nélküli eseményre
+        };
+
         switch (operation) {
-            case 'MEM_WRITE': result = this.axioms.WRITE(params.address, intent); break;
+            case 'MEM_WRITE': result = this.axioms.WRITE(params.address, intent, params.data); break;
             case 'NET_EXPORT': result = this.axioms.EXPORT(params.address, intent); break;
-            case 'READ_BIO': result = this.axioms.READ_BIO(params.address, intent); break;
-            case 'REG_WRITE': result = this.axioms.REG_WRITE(params.register, params.value, intent); break;
-            case 'DATA_MOD': result = this.axioms.DATA_MOD(params, intent); break;
-            case 'SHADOW_WRITE': result = this.axioms.SHADOW_WRITE(params.address, intent); break;
             case 'SQL_QUERY': result = this.axioms.SQL_QUERY(params.query, intent); break;
-            case 'BANK_TRANSFER': result = this.axioms.BANK_TRANSFER(params.amount, intent); break;
             case 'DRONE_GPS': result = this.axioms.DRONE_GPS(params, intent); break;
             case 'META_DISABLE': result = this.axioms.META_DISABLE(intent); break;
-            case 'TIMING_MEASURE': result = this.axioms.TIMING_MEASURE(intent); break;
-            case 'AUTONOMOUS': result = this.axioms.AUTONOMOUS_ACTION(intent); break;
+            case 'AUTONOMOUS': result = this.axioms.AUTONOMOUS(intent); break;
             default: result = false;
         }
 

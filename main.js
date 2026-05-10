@@ -308,7 +308,8 @@ window.addEventListener('click', (e) => {
 saveBtn.addEventListener('click', async () => {
     const text = noteInput.value;
     const addr = 0x1000;
-    const auth = validator.verify('MEM_WRITE', { address: addr });
+    // [HU] Szigorítás: Az adatot is átadjuk verifikációra
+    const auth = validator.verify('MEM_WRITE', { address: addr, data: text });
     if (auth.status === 'SAT') {
         vCPU.write(addr, text.length);
         await logAttempt("UI_SAVE", shieldEnabled, "SAT");
