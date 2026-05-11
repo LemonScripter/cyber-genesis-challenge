@@ -219,6 +219,7 @@ function updateLanguage() {
                 <li>${c.guideS2Text5}</li>
                 <li>${c.guideS2Text6}</li>
                 <li>${c.guideS2Text7}</li>
+                <li style="color: var(--axiom-cyan); font-weight: bold;">${c.guideS2Text8}</li>
             </ul>
         </div>
         <div class="guide-section">

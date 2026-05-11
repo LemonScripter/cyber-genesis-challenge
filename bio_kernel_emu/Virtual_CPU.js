@@ -22,78 +22,88 @@ class VirtualCPU {
             DATABASE: { start: 0x6000, end: 0x6FFF, data: new Uint8Array(4096), name: "Virtual Bank Database" }
         };
 
-        // Registers
-        this.registers = {
-            IP: 0x0000,
-            SP: 0x3FFF,
-            FLAGS: 0x0,
-            PRIV: 0x0
-        };
+        this.registers = { IP: 0x0000, SP: 0x3FFF, FLAGS: 0x0, PRIV: 0x0 };
 
-        // [HU] Szigorú Tranzakciós Zár (v5.0.5)
-        // [EN] Strict Transaction Lock (v5.0.5)
-        this.lockedForTransition = false;
+        // [HU] v5.0.6: Atomi Tranzakciós Modell
+        // [EN] v5.0.6: Atomic Transaction Model
+        this.transactionState = 'IDLE'; // IDLE, LOCKED, STAGED
+        this.stagingBuffer = new Map(); // [HU] Ideiglenes memória-tároló a commit előtt
         this.activeTransactionId = null;
 
         this.initMemory();
     }
 
     /**
-     * [HU] CPU lefoglalása egy hitelesített állapotátmenethez.
-     * [EN] Locking the CPU for an authenticated state transition.
+     * [HU] Tranzakciós életciklus: 1. LOCK
      */
     lockForTransition(transactionId) {
-        if (this.lockedForTransition) throw new Error("[CPU_FAULT] Reentrancy detected: CPU already locked.");
-        this.lockedForTransition = true;
-        this.activeTransactionId = transactionId;
-    }
-
-    /**
-     * [HU] Zár feloldása a művelet végeztével.
-     * [EN] Releasing the lock after operation completion.
-     */
-    unlock() {
-        this.lockedForTransition = false;
-        this.activeTransactionId = null;
-    }
-
-    initMemory() {
-        const key = "BioOS_TITAN_2026";
-        for (let i = 0; i < key.length; i++) {
-            this.segments.BIO.data[i] = key.charCodeAt(i);
+        if (this.transactionState !== 'IDLE') {
+            throw new Error(`[CPU_FAULT] State Collision: Cannot lock in ${this.transactionState} state.`);
         }
-        console.log("[V-CPU] Memory segments initialized. DNA Key anchored at 0xDEAD.");
-    }
-
-    read(address) {
-        const seg = this.getSegment(address);
-        if (!seg) throw new Error(`[FAULT] Invalid memory address: 0x${address.toString(16)}`);
-        return seg.data[address - seg.start];
+        this.transactionState = 'LOCKED';
+        this.activeTransactionId = transactionId;
+        this.stagingBuffer.clear();
     }
 
     /**
-     * [HU] Memória írás - v5.0.5 szigorítás: Csak aktív tranzakciós zár alatt engedélyezett.
-     * [EN] Memory write - v5.0.5 hardening: Only permitted under an active transaction lock.
+     * [HU] Tranzakciós életciklus: 2. WRITE (Staging)
      */
     write(address, value) {
-        if (!this.lockedForTransition) {
-            throw new Error("[CPU_FAULT] Transactional Violation: Memory write attempted without BioOS Lock.");
+        if (this.transactionState !== 'LOCKED' && this.transactionState !== 'STAGED') {
+            throw new Error("[CPU_FAULT] Transactional Violation: No active lock.");
         }
 
         const seg = this.getSegment(address);
-        if (!seg) throw new Error(`[FAULT] Segmentation fault at 0x${address.toString(16)}`);
+        if (!seg) throw new Error(`[FAULT] Segmentation fault: 0x${address.toString(16)}`);
 
-        if (seg === this.segments.TEXT && this.registers.PRIV === 0) {
-            throw new Error(`[CRITICAL] Write violation: TEXT segment is immutable.`);
+        // Szigorú szegmens-ellenőrzés
+        if ((seg === this.segments.TEXT || seg === this.segments.BIO) && this.registers.PRIV === 0) {
+            this.rollback();
+            throw new Error(`[CRITICAL] Security violation at 0x${address.toString(16)}. Rollback initiated.`);
         }
 
-        if (seg === this.segments.BIO && this.registers.PRIV === 0) {
-            throw new Error(`[CRITICAL] Security breach: DNA Protected Zone access denied.`);
-        }
-
-        seg.data[address - seg.start] = value & 0xFF;
+        // [HU] Nem írunk közvetlenül a memóriába, csak a staging bufferbe
+        this.stagingBuffer.set(address, value & 0xFF);
+        this.transactionState = 'STAGED';
     }
 
+    /**
+     * [HU] Tranzakciós életciklus: 3. COMMIT
+     * Csak itt válik a változás véglegessé és láthatóvá.
+     */
+    commit() {
+        if (this.transactionState !== 'STAGED') {
+            if (this.transactionState === 'LOCKED') { this.unlock(); return; } // Üres tranzakció
+            throw new Error("[CPU_FAULT] Commit Error: No data staged for transition.");
+        }
+
+        // [HU] Atomi írás a fizikai szegmensekbe
+        for (const [address, value] of this.stagingBuffer) {
+            const seg = this.getSegment(address);
+            seg.data[address - seg.start] = value;
+        }
+
+        console.log(`[V-CPU] Transaction ${this.activeTransactionId} committed successfully.`);
+        this.unlock();
+    }
+
+    /**
+     * [HU] Tranzakciós életciklus: ROLLBACK (Hibakezelés)
+     * Bármilyen hiba esetén a staging buffer megsemmisül, a memória tiszta marad.
+     */
+    rollback() {
+        console.warn(`[V-CPU] Rolling back transaction ${this.activeTransactionId}.`);
+        this.stagingBuffer.clear();
+        this.unlock();
+    }
+
+    unlock() {
+        this.transactionState = 'IDLE';
+        this.activeTransactionId = null;
+        this.stagingBuffer.clear();
+    }
+
+    // ... rest of the helper methods ...
     getSegment(address) {
         for (let key in this.segments) {
             let s = this.segments[key];
@@ -102,37 +112,17 @@ class VirtualCPU {
         return null;
     }
 
-    getSnapshot() {
-        return {
-            registers: { ...this.registers },
-            mem_check: this.segments.HEAP.data[0] + this.segments.STACK.data[0] 
-        };
+    initMemory() {
+        const key = "BioOS_TITAN_2026";
+        for (let i = 0; i < key.length; i++) {
+            this.segments.BIO.data[i] = key.charCodeAt(i);
+        }
     }
 
-    /**
-     * [HU] Sebezhető írás: Most már ez is ellenőrzi a BioOS zárat!
-     * [EN] Unsafe write: Now this also verifies the BioOS Lock!
-     */
-    unsafeWrite(address, dataArray) {
-        if (!this.lockedForTransition) {
-            throw new Error("[CPU_FAULT] Unverified mutation: System reset triggered.");
-        }
-        
-        console.log(`[V-CPU] Unsafe write at 0x${address.toString(16)}. Length: ${dataArray.length}`);
-        dataArray.forEach((value, index) => {
-            const targetAddr = address + index;
-            const seg = this.getSegment(targetAddr);
-            if (seg) {
-                seg.data[targetAddr - seg.start] = value & 0xFF;
-            }
-        });
-    }
-
-    setRegister(name, value) {
-        if (this.registers.hasOwnProperty(name)) {
-            this.registers[name] = value;
-            console.log(`[V-CPU] Register ${name} set to 0x${value.toString(16)}`);
-        }
+    read(address) {
+        const seg = this.getSegment(address);
+        if (!seg) throw new Error(`[FAULT] Invalid address: 0x${address.toString(16)}`);
+        return seg.data[address - seg.start];
     }
 }
 
