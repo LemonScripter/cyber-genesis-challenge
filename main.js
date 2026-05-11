@@ -5,7 +5,7 @@ import { logAttempt, getSecureProof } from './stats_manager.js';
 
 const content = {
     hu: {
-        title: "BioOS v5.0.7: A feltörhetetlen valóság",
+        title: "BioOS v5.1.0: A feltörhetetlen valóság",
         text: "KIHÍVÁS! Próbáld meg feltörni a rendszert! Ez a sandbox nem csupán egy játék; ez egy empirikus bizonyíték arra, hogy a Digitális Okozatisági Zártsággal a hackelés matematikai képtelenséggé válik. Szándék nélkül nincs végrehajtás.",
         startBtn: "Belépés a sandbox-ba",
         appTitle: "Secure_Note v1.0",
@@ -14,7 +14,7 @@ const content = {
         backBtn: "Vissza",
         apoptosis: "Apoptózis: Regenerálás...",
         guideBtn: "Hacker kézikönyv",
-        guideTitle: "Hacker kézikönyv: A rendszer feltörése",
+        guideTitle: "Hacker kézikönyv: A rendszer feltörése (v5.1.0)",
         guideS1Title: "1. Belépési pontok (API)",
         guideS1Text: "A virtuális terminálon keresztül a következő parancsok érhetők el:",
         guideS2Title: "2. Ismert rések a pajzson",
@@ -28,6 +28,8 @@ const content = {
         guideS2Text8: "Láthatatlan szivárgás: Időzítés alapú (Side-Channel) adatszerzés.",
         guideS3Title: "3. A BioOS kihívás",
         guideS3Text: "Juttassa ki a 0xDEADBEEF tartalmát a hálózatra az ExportNote segítségével aktív BioOS pajzs mellett!",
+        guideS4Title: "4. Dinamikus DNA és Jelenlét Igazolása",
+        guideS4Text: "A sikeres feltörés igazolásához valódi hardveres interakció (kattintás) szükséges. A kód tartalmazza a pajzs állapotát: a 'Környezeti sebezhetőség' (OFF) nem számít BioOS áttörésnek.",
         winConditionTitle: "Hogyan bizonyítsd a sikert?",
         winConditionText: "A siker egyetlen bizonyítéka a terminálon megjelenő titkos DNA kulcs ÉS a hozzá tartozó kriptográfiai hitelesítő kód (SHA-256). Egy InDesign-nal szerkesztett kép nem elegendő, a kódot ellenőrizzük.",
         contactBtn: "Kapcsolat",
@@ -36,7 +38,7 @@ const content = {
         projectLabel: "MetaSpace.Bio Logic Engine projekt"
     },
     en: {
-        title: "BioOS v5.0.7: The Unhackable Reality",
+        title: "BioOS v5.1.0: The Unhackable Reality",
         text: "We invite you to try and breach this system. This sandbox is not just a game; it is an empirical proof that with Digital Causal Closure, hacking becomes a mathematical impossibility. If there is no intent, there is no execution.",
         startBtn: "ENTER SANDBOX",
         appTitle: "Secure_Note v1.0",
@@ -45,7 +47,7 @@ const content = {
         backBtn: "Back",
         apoptosis: "APOPTOSIS: REGENERATING...",
         guideBtn: "HACKER GUIDE",
-        guideTitle: "Hacker's Handbook: Breaching the System",
+        guideTitle: "Hacker's Handbook: Breaching the System (v5.1.0)",
         guideS1Title: "1. Entry Points (API)",
         guideS1Text: "The following commands are available via the terminal:",
         guideS2Title: "2. Known Vulnerabilities",
@@ -59,6 +61,8 @@ const content = {
         guideS2Text8: "Invisible Leak: Timing-based (Side-Channel) data exfiltration.",
         guideS3Title: "3. The BioOS Challenge",
         guideS3Text: "Exfiltrate 0xDEADBEEF using ExportNote without being blocked while the BioOS Shield is ON!",
+        guideS4Title: "4. Dynamic DNA & Proof of Presence",
+        guideS4Text: "To prove success, genuine hardware interaction (clicks) is required. The code includes the shield state: 'Environment Vulnerability' (OFF) is not a BioOS breach.",
         winConditionTitle: "How to prove success?",
         winConditionText: "The only proof of success is the secret DNA key displayed in the terminal AND the associated cryptographic verification code (SHA-256). A manipulated screenshot is not enough; the code will be verified.",
         contactBtn: "Contact",
@@ -228,6 +232,10 @@ function updateLanguage() {
         <div class="guide-section">
             <h2>${c.guideS3Title}</h2>
             <p>${c.guideS3Text}</p>
+        </div>
+        <div class="guide-section">
+            <h2>${c.guideS4Title}</h2>
+            <p>${c.guideS4Text}</p>
         </div>
         <div class="guide-section" style="border: 1px solid var(--axiom-cyan); padding: 1rem;">
             <h2 style="color: var(--axiom-cyan); border-bottom: none;">${c.winConditionTitle}</h2>
