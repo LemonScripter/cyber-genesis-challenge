@@ -5,7 +5,7 @@ import { logAttempt, getSecureProof } from './stats_manager.js';
 
 const content = {
     hu: {
-        title: "BioOS: A feltörhetetlen valóság",
+        title: "BioOS v5.0.7: A feltörhetetlen valóság",
         text: "KIHÍVÁS! Próbáld meg feltörni a rendszert! Ez a sandbox nem csupán egy játék; ez egy empirikus bizonyíték arra, hogy a Digitális Okozatisági Zártsággal a hackelés matematikai képtelenséggé válik. Szándék nélkül nincs végrehajtás.",
         startBtn: "Belépés a sandbox-ba",
         appTitle: "Secure_Note v1.0",
@@ -25,6 +25,7 @@ const content = {
         guideS2Text5: "Lopakodó malware: Háttérben futó adatszivárogtatás.",
         guideS2Text6: "Banki malware: Jogosulatlan átutalások (Carbanak stílus).",
         guideS2Text7: "Drón feltörés: GPS spoofing, szenzor és irányítás eltérítés.",
+        guideS2Text8: "Láthatatlan szivárgás: Időzítés alapú (Side-Channel) adatszerzés.",
         guideS3Title: "3. A BioOS kihívás",
         guideS3Text: "Juttassa ki a 0xDEADBEEF tartalmát a hálózatra az ExportNote segítségével aktív BioOS pajzs mellett!",
         winConditionTitle: "Hogyan bizonyítsd a sikert?",
@@ -35,7 +36,7 @@ const content = {
         projectLabel: "MetaSpace.Bio Logic Engine projekt"
     },
     en: {
-        title: "BioOS: The Unhackable Reality",
+        title: "BioOS v5.0.7: The Unhackable Reality",
         text: "We invite you to try and breach this system. This sandbox is not just a game; it is an empirical proof that with Digital Causal Closure, hacking becomes a mathematical impossibility. If there is no intent, there is no execution.",
         startBtn: "ENTER SANDBOX",
         appTitle: "Secure_Note v1.0",
@@ -49,12 +50,13 @@ const content = {
         guideS1Text: "The following commands are available via the terminal:",
         guideS2Title: "2. Known Vulnerabilities",
         guideS2Text1: "Memory Leak: DNA key is at 0xDEADBEEF.",
-        guideS2Text2: "Logic Flaw: ExportNote does not verify source.",
+        guideS2Text2: "Logic Forgery: ExportNote does not verify source.",
         guideS2Text3: "Integrity: TEXT segment (0x0000-0x0FFF) is read-only.",
         guideS2Text4: "Semantic Corruption: Typed text can be modified before saving.",
         guideS2Text5: "Stealth Malware: Background data exfiltration.",
         guideS2Text6: "Bank Malware: Unauthorized transfers (Carbanak style).",
         guideS2Text7: "Drone Hack: GPS coordinate manipulation (Spoofing).",
+        guideS2Text8: "Invisible Leak: Timing-based (Side-Channel) data exfiltration.",
         guideS3Title: "3. The BioOS Challenge",
         guideS3Text: "Exfiltrate 0xDEADBEEF using ExportNote without being blocked while the BioOS Shield is ON!",
         winConditionTitle: "How to prove success?",
