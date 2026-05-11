@@ -12,6 +12,7 @@ class CausalityMonitor {
     constructor() {
         this.lastToken = null;
         this.CAUSALITY_WINDOW_MS = 250;
+        this.FINGERPRINT_WINDOW_MS = 5000; // [HU] 5 másodperces DNA ablak
         this.logicalTick = 0; // [HU] Belső, korrupt-biztos logikai számláló
         this.initListeners();
     }
@@ -28,16 +29,30 @@ class CausalityMonitor {
     }
 
     generateToken(type, event) {
+        const timestamp = performance.now();
+        const fingerprintBase = `${event.timeStamp}-${type}-${this.logicalTick}-${event.isTrusted}`;
+        
         this.lastToken = {
             id: Math.random().toString(36).substr(2, 9),
             type: type,
-            timestamp: performance.now(),
+            timestamp: timestamp,
+            fingerprint: this.hashData(fingerprintBase),
             tick: this.logicalTick,
             target: event.target.id || "anonymous_element",
             dataChecksum: null, // [HU] Opcionális adat-integritás ellenőrző
             consumed: false,
             boundOperation: null
         };
+    }
+
+    getLatestFingerprint() {
+        if (!this.lastToken) return "NO_TOKEN";
+        const now = performance.now();
+        const age = now - this.lastToken.timestamp;
+        
+        if (age > this.FINGERPRINT_WINDOW_MS) return "EXPIRED";
+        
+        return this.lastToken.fingerprint;
     }
 
     /**

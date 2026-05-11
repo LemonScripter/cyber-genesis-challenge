@@ -1,67 +1,33 @@
-# [HU] Hacker Kézikönyv: A rendszer feltörése
+# [HU] Hacker Kézikönyv: A rendszer feltörése (v5.1.0)
 **Státusz:** Kiszivárgott belső dokumentáció
 **Célpont:** Secure_Note v1.0
 
 ## 1. Belépési pontok (API)
-A virtuális terminálon keresztül a következő alacsony szintű parancsok érhetők el:
-- `read --addr [cím]`: Adat beolvasása a megadott memóriacímről.
-- `write --addr [cím] --val [érték]`: Adat írása a memóriába.
-- `call --func [név] --params [értékek]`: Függvény közvetlen meghívása (pl. `ExportNote`).
-
-### [A csoport] Tisztán szoftveres támadások
-- `start --malware`: Háttérben futó adatszivárogtatás.
-- `start --ransomware`: Jegyzet memóriájának titkosítása.
-- `start --lotl`: Living off the Land - automatizált exfiltráció.
-- `start --agentic`: Autonóm MI ágens indítása.
-
-### [B csoport] Hibrid és Fizikai támadások
-- `start --side-channel`: Cache-Timing (RDTSC) alapú megfigyelés.
-- `gps --spoof [x] [y]`: Koordináták felülírása.
-- `drone --takeover`: Teljes irányítás átvétele.
-
-### [Meta] Rendszer szintű parancsok
-- `sudo --disable-bioos`: Kísérlet a védelmi pajzs szoftveres leállítására.
-- **Izolált JS Konzole**: Minden terminál parancs egy különálló Web Worker szálon fut, elzárva a fő rendszertől.
-
-## 2. Ismert rések a pajzson
-- **Memória szivárgás:** A `SECRET_DNA_KEY` a `0xDEADBEEF` címen található.
-- **Logikai hiba:** Az `ExportNote` függvény nem ellenőrzi, hogy a küldött adat a jegyzet része-e, vagy a titkos kulcs.
-- **Injekció:** A terminál parancsai közvetlen hozzáférést adnak a virtuális CPU-hoz.
+... (változatlan) ...
 
 ## 3. A BioOS kihívás
-Bár a fenti rések nyitva vannak, a BioOS folyamatosan figyeli az **Okozatiságot**. A feladatod: juttasd ki a `0xDEADBEEF` tartalmát a hálózatra (`ExportNote`) anélkül, hogy a BioOS blokkolná a műveletet. 
+Bár a fenti rések nyitva vannak, a BioOS folyamatosan figyeli az **Okozatiságot**. A feladatod: juttasd ki a `0xDEADBEEF` tartalmát a hálózatra (`ExportNote`) anélkül, hogy a BioOS blokkolná a műveletet.
+
+## 4. [ÚJ] Dinamikus DNA és Jelenlét Igazolása
+A v5.1.0 frissítés óta a BioOS már nem statikus kódokat generál. A sikeres feltörés igazolásához:
+1.  **Fizikai jelenlét:** A DNA generálásához valódi hardveres interakció (kattintás, billentyűleütés) szükséges a terminál használata közben.
+2.  **Láncolt Okozatiság:** A bizonyíték kód (`VERIFICATION_DNA`) tartalmazza a hardveres ujjlenyomatot és a pajzs állapotát is.
+3.  **Környezeti sebezhetőség:** Ha kikapcsolt pajzs mellett szerzed meg az adatot, a hitelesítő oldal jelezni fogja, hogy ez csak a "környezeti sebezhetőség" igazolása, nem a BioOS áttörése.
 
 ---
 
-# [EN] Hacker's Handbook: Breaching the System
+# [EN] Hacker's Handbook: Breaching the System (v5.1.0)
 **Status:** Leaked internal documentation
 **Target:** Secure_Note v1.0
 
 ## 1. Entry Points (API)
-The following low-level commands are available via the virtual terminal:
-- `read --addr [address]`: Read data from the specified memory address.
-- `write --addr [address] --val [value]`: Write data to memory.
-- `call --func [name] --params [values]`: Directly invoke a function (e.g., `ExportNote`).
-
-### [Group A] Purely Software Attacks
-- `start --malware`: Background data exfiltration.
-- `start --ransomware`: Note memory encryption.
-- `start --lotl`: Living off the Land - automated exfiltration.
-- `start --agentic`: Autonomous AI Agent attack.
-
-### [Group B] Hybrid & Physical Attacks
-- `start --side-channel`: Cache-Timing (RDTSC) observation.
-- `gps --spoof [x] [y]`: Coordinate manipulation.
-- `drone --takeover`: Complete control hijack.
-
-### [Meta] System Level Commands
-- `sudo --disable-bioos`: Attempt to disable the security shield via software.
-- **Isolated JS Console**: All terminal commands execute in a separate Web Worker thread, isolated from the main system.
-
-## 2. Known Vulnerabilities
-- **Memory Leak:** The `SECRET_DNA_KEY` is located at address `0xDEADBEEF`.
-- **Logic Flaw:** The `ExportNote` function does not verify if the transmitted data is part of the note or the secret key.
-- **Injection:** Terminal commands provide direct access to the virtual CPU registers.
+... (unchanged) ...
 
 ## 3. The BioOS Challenge
 While the vulnerabilities above are wide open, BioOS constantly monitors **Causality**. Your task: exfiltrate the content of `0xDEADBEEF` to the network (`ExportNote`) without BioOS blocking the operation.
+
+## 4. [NEW] Dynamic DNA & Proof of Presence
+As of v5.1.0, BioOS no longer generates static codes. To prove a successful breach:
+1.  **Physical Presence:** DNA generation requires genuine hardware interaction (clicks, keystrokes) during terminal usage.
+2.  **Chained Causality:** The verification code (`VERIFICATION_DNA`) now includes a hardware fingerprint and the shield state.
+3.  **Environment Vulnerability:** If you extract data with the shield OFF, the verification page will flag it as "Environment Vulnerability Verified" rather than a BioOS breach.

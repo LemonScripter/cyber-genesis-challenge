@@ -34,11 +34,15 @@ export async function getStats() {
     return { total: 0, blocked: 0, recent: [] };
 }
 
-export async function getSecureProof(data) {
+export async function getSecureProof(data, shieldState, fingerprint) {
     try {
         const response = await fetch('/.netlify/functions/get_proof', {
             method: 'POST',
-            body: JSON.stringify({ data: data })
+            body: JSON.stringify({ 
+                data: data,
+                shield_state: shieldState,
+                fingerprint: fingerprint
+            })
         });
         const result = await response.json();
         return result.verification_dna;
@@ -47,15 +51,18 @@ export async function getSecureProof(data) {
     }
 }
 
-export async function verifyHash(hash) {
+export async function verifyHash(hash, fingerprint) {
     try {
         const response = await fetch('/.netlify/functions/check_proof', {
             method: 'POST',
-            body: JSON.stringify({ hash: hash })
+            body: JSON.stringify({ 
+                hash: hash,
+                fingerprint: fingerprint
+            })
         });
         const result = await response.json();
-        return result.valid;
+        return result; // [HU] Most már a teljes objektumot adjuk vissza (valid, mode)
     } catch (e) {
-        return false;
+        return { valid: false, mode: "NONE" };
     }
 }

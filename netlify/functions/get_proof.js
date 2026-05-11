@@ -8,16 +8,18 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { data, action } = JSON.parse(event.body);
+    const { data, shield_state, fingerprint } = JSON.parse(event.body);
     
     // [HU] A "SÓ" itt szerveroldalon van, a hacker nem láthatja
     // [EN] The "SALT" is server-side, hidden from the hacker
     const SECRET_SALT = process.env.BIOOS_VERIFY_SALT || "BIOOS_SECRET_SALT_2026_SECURE";
     
-    // [HU] SHA-256 HMAC generálása
-    // [EN] Generate SHA-256 HMAC
+    // [HU] Dinamikus láncolt formula: Adat + Pajzs állapot + Fizikai ujjlenyomat
+    // [EN] Dynamic chained formula: Data + Shield state + Physical fingerprint
+    const payload = `${data}:${shield_state ? 'ON' : 'OFF'}:${fingerprint}`;
+
     const hash = crypto.createHmac('sha256', SECRET_SALT)
-                       .update(data)
+                       .update(payload)
                        .digest('hex');
 
     return {

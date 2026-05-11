@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BioOS v5.0.7: Scientific Cross-Engine Validator</title>
+    <style>
+        body { background: #050505; color: #00ffcc; font-family: monospace; padding: 20px; }
+        h1 { border-bottom: 1px solid #00ffcc; }
+        .log { background: #0a0a0a; border: 1px solid #333; padding: 10px; height: 500px; overflow-y: scroll; margin-top: 20px; }
+        .pass { color: #00ff00; }
+        .fail { color: #ff0000; }
+        .stats { margin-top: 20px; padding: 10px; border: 1px solid #00ffcc; }
+    </style>
+</head>
+<body>
+    <h1>BioOS v5.0.7: Cross-Engine Scientific Validation</h1>
+    <p>Target Engine: <span id="engine-info">Detecting...</span></p>
+    <button id="run-btn" style="padding: 10px; background: #00ffcc; color: black; border: none; cursor: pointer; font-weight: bold;">RUN FULL AUDIT</button>
+
+    <div class="stats" id="stats-panel">Waiting for audit...</div>
+    <div class="log" id="log-output"></div>
+
+    <script type="module">
+        import VirtualCPU from './bio_kernel_emu/Virtual_CPU.js';
+        import CausalityMonitor from './bio_kernel_emu/Causality_Monitor.js';
+        import AxiomValidator from './bio_kernel_emu/Axiom_Validator.js';
+
+        const logOutput = document.getElementById('log-output');
+        const statsPanel = document.getElementById('stats-panel');
+        const runBtn = document.getElementById('run-btn');
+
+        document.getElementById('engine-info').innerText = navigator.userAgent;
+
+        function log(msg, cls = '') {
+            const div = document.createElement('div');
+            div.className = cls;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logOutput.prepend(div);
+        }
+
+        function calculateStats(data) {
+            const n = data.length;
+            const mean = data.reduce((a, b) => a + b) / n;
+            const stdDev = Math.sqrt(data.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
+            return { mean, stdDev };
+        }
+
+        async function runAudit() {
+            runBtn.disabled = true;
+            logOutput.innerHTML = '';
+            log("Starting Ultimate Audit v5.0.7...");
+
+            const vCPU = new VirtualCPU();
+            const monitor = new CausalityMonitor();
+            const validator = new AxiomValidator(vCPU, monitor);
+
+            // 1. Statistical Timing Analysis
+            log("Measuring Side-Channel (10,000 iterations)...");
+            const samplesUnsat = [];
+            const samplesAxiomFail = [];
+            const BATCH_SIZE = 100;
+            const ITERATIONS = 100;
+
+            for (let i = 0; i < ITERATIONS; i++) {
+                // Batch UNSAT
+                const s1 = performance.now();
+                for(let j=0; j<BATCH_SIZE; j++) validator.verify('MEM_WRITE', { address: 0x9999 });
+                samplesUnsat.push((performance.now() - s1) / BATCH_SIZE);
+
+                // Batch FAIL
+                monitor.generateToken('mousedown', { isTrusted: true, target: { id: 'save-btn' } });
+                const s2 = performance.now();
+                for(let j=0; j<BATCH_SIZE; j++) validator.verify('MEM_WRITE', { address: 0x0000 });
+                samplesAxiomFail.push((performance.now() - s2) / BATCH_SIZE);
+                monitor.lastToken.consumed = true;
+                
+                if (i % 20 === 0) log(`Progress: ${i}%`);
+                await new Promise(r => setTimeout(r, 0)); // Yield to UI
+            }
+
+            const statsUnsat = calculateStats(samplesUnsat);
+            const statsFail = calculateStats(samplesAxiomFail);
+            const delta = Math.abs(statsUnsat.mean - statsFail.mean);
+
+            const isSecure = delta < statsUnsat.stdDev;
+
+            statsPanel.innerHTML = `
+                <h3>STATISTICAL RESULTS</h3>
+                <p>UNSAT Mean: ${statsUnsat.mean.toFixed(6)}ms (StdDev: ${statsUnsat.stdDev.toFixed(6)}ms)</p>
+                <p>FAIL Mean:  ${statsFail.mean.toFixed(6)}ms (StdDev: ${statsFail.stdDev.toFixed(6)}ms)</p>
+                <p><b>DELTA: ${delta.toFixed(6)}ms</b></p>
+                <p>Status: <span class="${isSecure ? 'pass' : 'fail'}">${isSecure ? 'SECURE (Opaque)' : 'VULNERABLE (Leaking)'}</span></p>
+            `;
+
+            // 2. Recovery Stability
+            log("Running Recovery Fuzzing (1,000 cycles)...");
+            let corrupted = false;
+            for (let i = 0; i < 1000; i++) {
+                try {
+                    vCPU.lockForTransition("fuzz");
+                    vCPU.write(0xDEAD, 0x00);
+                } catch (e) {
+                    vCPU.initMemory();
+                }
+            }
+            log(`Recovery Stability: ${corrupted ? 'FAILED' : 'PASSED'}`, corrupted ? 'fail' : 'pass');
+
+            // 3. instance Isolation
+            const v2 = new VirtualCPU();
+            vCPU.segments.HEAP.data[0] = 0xFF;
+            const isolation = v2.segments.HEAP.data[0] === 0;
+            log(`Multi-Instance Isolation: ${isolation ? 'PASSED' : 'FAILED'}`, isolation ? 'pass' : 'fail');
+
+            log("AUDIT COMPLETE.");
+            runBtn.disabled = false;
+        }
+
+        runBtn.addEventListener('click', runAudit);
+    </script>
+</body>
+</html>

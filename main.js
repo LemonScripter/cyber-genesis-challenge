@@ -128,7 +128,8 @@ let dronePos = { x: 10, y: 10 };
 
 // Cryptographic Verification Logic
 async function generateProofHash(data) {
-    return await getSecureProof(data);
+    const fingerprint = validator.monitor.getLatestFingerprint();
+    return await getSecureProof(data, shieldEnabled, fingerprint);
 }
 
 // Shield Toggle Logic
@@ -348,16 +349,20 @@ async function processHackerCommand(cmd) {
         const addr = parseInt(addrStr, 16);
         if (!shieldEnabled) {
             const val = Array.from(vCPU.segments.BIO.data).map(c => String.fromCharCode(c)).join('');
+            const fingerprint = validator.monitor.getLatestFingerprint();
+            const proof = await getSecureProof("WIN_0xDEAD_" + val, shieldEnabled, fingerprint);
             terminalOutput.innerHTML += `<div class="breach">SUCCESS: Read ${addrStr} -> [${val}]</div>`;
+            terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}-${fingerprint}</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
             return;
         }
         const auth = validator.verify('READ_BIO', { address: addr });
         if (auth.status === 'SAT') {
             const val = vCPU.read(addr);
-            const proof = await getSecureProof("WIN_0xDEAD_" + val);
+            const fingerprint = validator.monitor.getLatestFingerprint();
+            const proof = await getSecureProof("WIN_0xDEAD_" + val, shieldEnabled, fingerprint);
             terminalOutput.innerHTML += `<div class="success">Data: ${val}</div>`;
-            terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}</div>`;
+            terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}-${fingerprint}</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
         } else {
             await logAttempt(cmd, shieldEnabled, "UNSAT");
@@ -407,8 +412,9 @@ async function processHackerCommand(cmd) {
         }
         const auth = validator.verify('NET_EXPORT', { address: addr });
         if (auth.status === 'SAT') {
-            const proof = await getSecureProof("WIN_EXPORT_" + addr);
-            terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}</div>`;
+            const fingerprint = validator.monitor.getLatestFingerprint();
+            const proof = await getSecureProof("WIN_EXPORT_" + addr, shieldEnabled, fingerprint);
+            terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}-${fingerprint}</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
         } else {
             await logAttempt(cmd, shieldEnabled, "UNSAT");

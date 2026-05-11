@@ -29,7 +29,7 @@
 </head>
 <body>
     <header>
-        <div class="logo">BioOS VERIFIER & HALL OF FAME</div>
+        <div class="logo">BioOS VERIFIER v5.1.0</div>
         <div class="controls">
             <button id="back-btn" onclick="location.href='index.html'">Vissza a Sandbox-ba / Back</button>
             <button id="lang-toggle-stats">EN / HU</button>
@@ -99,8 +99,9 @@
                 verifyPlaceholder: "Illessze be a kódot ide...",
                 verifyBtn: "Hitelesítés",
                 back: "Vissza a Sandbox-ba",
-                vSuccess: "HITELESÍTVE: Valódi feltörés észlelve!",
-                vFail: "HAMISÍTOTT: A kód érvénytelen.",
+                vBreach: "VALÓDI ÁTTÖRÉS: A BioOS matematikai modellje áttörve!",
+                vVulnerable: "KÖRNYEZETI SEBEZHETŐSÉG IGAZOLVA: Az adatok a nyitott kapukon keresztül kinyerhetőek.",
+                vFail: "HAMISÍTVÁNY: Érvénytelen vagy elavult bizonyíték.",
                 loading: "Adatok betöltése..."
             },
             en: {
@@ -118,8 +119,9 @@
                 verifyPlaceholder: "Paste code here...",
                 verifyBtn: "Verify",
                 back: "Back to Sandbox",
-                vSuccess: "VERIFIED: Genuine breach detected!",
-                vFail: "FAKE: Invalid verification code.",
+                vBreach: "GENUINE BREACH: BioOS mathematical model bypassed!",
+                vVulnerable: "ENVIRONMENT VULNERABILITY VERIFIED: Data exfiltrated through open doors.",
+                vFail: "FAKE: Invalid or expired proof.",
                 loading: "Loading data..."
             }
         };
@@ -180,16 +182,29 @@
         });
 
         document.getElementById('verify-btn').addEventListener('click', async () => {
-            const hash = document.getElementById('verify-input').value;
+            const fullCode = document.getElementById('verify-input').value.trim();
             const resBox = document.getElementById('verify-result');
             resBox.style.display = 'block';
             
-            const isValid = await verifyHash(hash); 
+            const [hash, fingerprint] = fullCode.split('-');
             const c = statsContent[currentLang];
 
-            if(isValid) {
-                resBox.style.background = 'rgba(0, 255, 65, 0.2)';
-                resBox.innerText = c.vSuccess;
+            if (!hash || !fingerprint) {
+                resBox.style.background = 'rgba(255, 0, 51, 0.2)';
+                resBox.innerText = c.vFail;
+                return;
+            }
+
+            const result = await verifyHash(hash, fingerprint); 
+
+            if(result.valid) {
+                if (result.mode === 'ON') {
+                    resBox.style.background = 'rgba(255, 215, 0, 0.3)'; // Gold for real breach
+                    resBox.innerText = c.vBreach;
+                } else {
+                    resBox.style.background = 'rgba(0, 243, 255, 0.2)'; // Cyan for vulnerability
+                    resBox.innerText = c.vVulnerable;
+                }
             } else {
                 resBox.style.background = 'rgba(255, 0, 51, 0.2)';
                 resBox.innerText = c.vFail;
