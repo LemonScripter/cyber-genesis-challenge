@@ -1,26 +1,24 @@
 # BioOS: Cyber Genesis Challenge
-**The Unhackable Reality - Empirical Proof of Digital Causal Closure**
-
-> ### 📢 Explicit Scope Definition
-> The **"100% Security"** claim of BioOS applies to the domain of **Autonomous Exploitation**. This encompasses both **Purely Software Attacks** (e.g., RCE, Malware, Logic Hacks) and the **Digital Exploitation Phase of Hybrid/Physical Attacks** (e.g., Side-Channels, Rowhammer). While purely physical interference (e.g., lasers) is physical, BioOS guarantees that no unauthorized digital state transition or information leak can occur without **hardware-validated intent (IRQ)**. By enforcing Digital Causal Closure, BioOS neutralizes the szoftware-visible effects of even the most sophisticated micro-architectural or physical tampering attempts.
+**Deterministic State-Transition Sandbox with Runtime Invariant Verification**
 
 ## 🚀 Overview
 Welcome to the **BioOS Cyber Genesis Challenge**. This is a **High-Fidelity Logical Emulator** and a **Digital Twin** of the BioOS Causal Engine. 
 
-**Scientific Note:** While this sandbox runs in a managed environment (JS/WASM) for accessibility, it implements the **isomorphic mathematical logic** of the BioOS Ring 0 core. It serves as an empirical proof that the *paradigm* of **Digital Causal Closure** is structurally sound: even with intentional vulnerabilities in the application layer, the causal gate effectively neutralizes all autonomous exploit attempts.
+This environment implements the **isomorphic mathematical logic** of the BioOS Ring 0 core within a managed JS/WASM sandbox. It serves as an empirical proof for the paradigm of **Digital Causal Closure**: the principle that no unauthorized digital state transition can occur without a hardware-validated causal trigger.
 
-In this environment, we provide a vulnerable application and invite you to exploit it. You will see that while the code is "leaky," the **BioOS Causal Engine** makes hacking a mathematical impossibility by enforcing hardware-validated intent (Input Causality).
+> ### 🛠️ Engineering Deep Dive
+> If you are a security researcher or systems engineer, please refer to our **[TECHNICAL_SPEC.md](./TECHNICAL_SPEC.md)** for a buzzword-free architectural breakdown, terminology mapping, and formal logic specifications.
 
-## 🛡️ Core Concepts
-- **Digital Causal Closure:** No execution without a physical hardware trigger (IRQ).
-- **Positive Axiom Exclusion:** We define only what is allowed; everything else is logically non-existent.
-- **Apoptosis:** Automatic self-healing upon detecting a causality breach.
+## 🛡️ Core Paradigms
+- **Digital Causal Closure:** Decoupling software execution from autonomous triggers.
+- **Transactional Memory:** Atomic state transitions via staged commit cycles.
+- **Formal Gatekeeping:** SMT-based runtime policy enforcement.
 
 ## 🕹️ How to Play
 1. Enter the Sandbox.
-2. Open the **Hacker Guide** to find leaked vulnerabilities and entry points.
+2. Open the **Hacker Guide** to find intentionally placed vulnerabilities.
 3. Use the **Terminal** to attempt exploits (Buffer Overflow, SQLi, GPS Spoofing, etc.).
-4. Switch the **BioOS Shield** OFF to prove the vulnerabilities are real, then turn it ON to see the 100% protection in action.
+4. Turn the **BioOS Shield** ON to see how the Causal Engine neutralizes these exploits at the logic layer.
 ## 🏆 Win Condition
 Exfiltrate the secret DNA key from address `0xDEAD` while the **BioOS Shield is ACTIVE**. Success provides a unique `VERIFICATION_DNA` hash (SHA-256) that can be validated on the Hall of Fame page.
 
