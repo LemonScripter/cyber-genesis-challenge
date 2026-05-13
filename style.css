@@ -122,6 +122,33 @@ p {
     word-break: break-all;
 }
 
+#causal-oscilloscope {
+    width: 100%;
+    height: 60px;
+    background: #000;
+    border-bottom: 1px solid var(--matrix-green);
+    margin-bottom: 0.5rem;
+}
+
+.demo-controls {
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.special-btn {
+    border-color: var(--axiom-cyan);
+    color: var(--axiom-cyan);
+    font-weight: bold;
+    box-shadow: 0 0 5px var(--axiom-cyan);
+}
+
+.special-btn:hover {
+    background: var(--axiom-cyan);
+    color: #000;
+    box-shadow: 0 0 15px var(--axiom-cyan);
+}
+
 #log-stream {
     flex-grow: 1;
     overflow-y: auto;

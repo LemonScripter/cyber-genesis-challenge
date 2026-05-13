@@ -14,6 +14,7 @@ class CausalityMonitor {
         this.CAUSALITY_WINDOW_MS = 250;
         this.FINGERPRINT_WINDOW_MS = 5000; // [HU] 5 másodperces DNA ablak
         this.logicalTick = 0; // [HU] Belső, korrupt-biztos logikai számláló
+        this.onCausalPulse = null; // [HU] UI visszacsatolás érvényes IRQ esetén
         this.initListeners();
     }
 
@@ -23,6 +24,7 @@ class CausalityMonitor {
                 if (e.isTrusted) {
                     this.logicalTick++; // Minden fizikai interakció növeli a logikai időt
                     this.generateToken(eventType, e);
+                    if (this.onCausalPulse) this.onCausalPulse(eventType);
                 }
             }, true);
         });
@@ -38,11 +40,22 @@ class CausalityMonitor {
             timestamp: timestamp,
             fingerprint: this.hashData(fingerprintBase),
             tick: this.logicalTick,
-            target: event.target.id || "anonymous_element",
+            target: event.target ? (event.target.id || "anonymous_element") : "simulated_target",
             dataChecksum: null, // [HU] Opcionális adat-integritás ellenőrző
             consumed: false,
-            boundOperation: null
+            boundOperation: null,
+            isTrusted: event.isTrusted
         };
+    }
+
+    /**
+     * [HU] Szimulált autonóm kísérlet (Hacker malware szimulációhoz)
+     * [EN] Simulated autonomous attempt (for malware simulation)
+     */
+    simulateAutonomousAttempt() {
+        this.logicalTick++;
+        this.generateToken('script_injection', { isTrusted: false, timeStamp: performance.now(), target: { id: 'malware-agent' } });
+        return this.lastToken.id;
     }
 
     getLatestFingerprint() {

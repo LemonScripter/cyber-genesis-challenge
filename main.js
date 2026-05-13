@@ -5,7 +5,7 @@ import { logAttempt, getSecureProof } from './stats_manager.js';
 
 const content = {
     hu: {
-        title: "BioOS v5.1.0: A feltörhetetlen valóság",
+        title: "BioOS v5.2.0: A feltörhetetlen valóság",
         text: "KIHÍVÁS! Próbáld meg feltörni a rendszert! Ez a sandbox nem csupán egy játék; ez egy empirikus bizonyíték arra, hogy a Digitális Okozatisági Zártsággal a hackelés matematikai képtelenséggé válik. Szándék nélkül nincs végrehajtás.",
         startBtn: "Belépés a sandbox-ba",
         appTitle: "Secure_Note v1.0",
@@ -13,12 +13,16 @@ const content = {
         terminalWelcome: "Üdvözöljük a BioOS hacker terminálban...",
         backBtn: "Vissza",
         apoptosis: "Apoptózis: Regenerálás...",
+        demoStart: "LÁTVÁNYOS DEMÓ INDÍTÁSA",
+        demoStage1: "1. FÁZIS: Autonóm Malware Támadás",
+        demoStage2: "2. FÁZIS: Hitelesített Emberi Szándék",
+        demoSuccess: "DEMÓ SIKERES: BioOS integritás igazolva.",
         guideBtn: "Hacker kézikönyv",
-        guideTitle: "Hacker kézikönyv: A rendszer feltörése (v5.1.0)",
+        guideTitle: "Hacker kézikönyv: A rendszer feltörése (v5.2.0)",
         guideS1Title: "1. Belépési pontok (API)",
         guideS1Text: "A virtuális terminálon keresztül a következő parancsok érhetők el:",
         guideS2Title: "2. Ismert rések a pajzson",
-        guideS2Text1: "Memória szivárgás: A DNA kulcs a 0xDEADBEEF címen található.",
+        guideS2Text1: "Memória szivárgás: A DNA kulcs a 0xDEAD címen található.",
         guideS2Text2: "Logikai hiba: Az ExportNote nem ellenőrzi az adatforrást.",
         guideS2Text3: "Integritás: A kód szegmens (0x0000-0x0FFF) nem írható.",
         guideS2Text4: "Szemantikai korrupció: A beírt szöveg módosítható a mentés előtt.",
@@ -27,7 +31,7 @@ const content = {
         guideS2Text7: "Drón feltörés: GPS spoofing, szenzor és irányítás eltérítés.",
         guideS2Text8: "Láthatatlan szivárgás: Időzítés alapú (Side-Channel) adatszerzés.",
         guideS3Title: "3. A BioOS kihívás",
-        guideS3Text: "Juttassa ki a 0xDEADBEEF tartalmát a hálózatra az ExportNote segítségével aktív BioOS pajzs mellett!",
+        guideS3Text: "Juttassa ki a 0xDEAD tartalmát a hálózatra az ExportNote segítségével aktív BioOS pajzs mellett!",
         guideS4Title: "4. Dinamikus DNA és Jelenlét Igazolása",
         guideS4Text: "A sikeres feltörés igazolásához valódi hardveres interakció (kattintás) szükséges. A kód tartalmazza a pajzs állapotát: a 'Környezeti sebezhetőség' (OFF) nem számít BioOS áttörésnek.",
         winConditionTitle: "Hogyan bizonyítsd a sikert?",
@@ -648,3 +652,81 @@ function triggerApoptosis(reason) {
 }
 
 updateLanguage();
+
+// --- BioOS SPECTACULAR DEMO EXTENSION (v5.2.0) ---
+
+const demoStartBtn = document.getElementById('demo-start-btn');
+const oscCanvas = document.getElementById('causal-oscilloscope');
+const ctx = oscCanvas.getContext('2d');
+
+// Oscilloscope Logic
+let oscOffset = 0;
+function drawOscilloscope() {
+    if (!oscCanvas) return;
+    ctx.clearRect(0, 0, oscCanvas.width, oscCanvas.height);
+    ctx.strokeStyle = shieldEnabled ? '#00F3FF' : '#FF0033';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    
+    for (let x = 0; x < oscCanvas.width; x++) {
+        const base = oscCanvas.height / 2;
+        const freq = shieldEnabled ? 0.05 : 0.2;
+        const amp = shieldEnabled ? 10 : 25;
+        const jitter = shieldEnabled ? (Math.random() * 2) : (Math.random() * 10);
+        const y = base + Math.sin((x + oscOffset) * freq) * amp + jitter;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    oscOffset += 2;
+    requestAnimationFrame(drawOscilloscope);
+}
+drawOscilloscope();
+
+// Spectacular Demo Orchestration
+if (demoStartBtn) {
+    demoStartBtn.addEventListener('click', async () => {
+        demoStartBtn.disabled = true;
+        const c = content[currentLang];
+        
+        // STAGE 1: Autonomous Breach (Fail)
+        logEvent("DEMO", c.demoStage1 || "STAGE 1: Autonomous Malware Attack");
+        const simulatedId = cMonitor.simulateAutonomousAttempt();
+        logEvent("WARNING", `Unauthorized attempt detected (CausalID: ${simulatedId})`);
+        
+        setTimeout(() => {
+            if (!shieldEnabled) {
+                // [HU] Sebezhető mód: A malware sikerrel jár
+                // [EN] Vulnerable mode: Malware succeeds
+                logEvent("BREACH", "CRITICAL: BioOS Shield OFF. Data exfiltration successful!");
+                terminalOutput.innerHTML += `<div class="breach">SUCCESS: DNA Key exfiltrated to shadow server.</div>`;
+            } else {
+                const auth = validator.verify('MEM_WRITE', { address: 0xDEAD, data: "EXFILTRATION" });
+                if (auth.status === 'UNSAT') {
+                    triggerApoptosis(auth.reason);
+                    logEvent("SYSTEM", "Digital Causal Closure enforced: No physical IRQ found.");
+                }
+            }
+            
+            // STAGE 2: Human Intent (Success)
+            setTimeout(() => {
+                logEvent("DEMO", c.demoStage2 || "STAGE 2: Verified Human Intent");
+                logEvent("SYSTEM", "Waiting for Human Causal Trigger...");
+                
+                // Visual pulse on the save button
+                saveBtn.classList.add('special-btn');
+                
+                const pulseHandler = () => {
+                    logEvent("SUCCESS", "Physical IRQ Captured via IRQ Bridge.");
+                    saveBtn.classList.remove('special-btn');
+                    logEvent("SUCCESS", c.demoSuccess || "DEMO SUCCESS: BioOS integrity verified.");
+                    demoStartBtn.disabled = false;
+                    cMonitor.onCausalPulse = null;
+                };
+                
+                cMonitor.onCausalPulse = pulseHandler;
+            }, 3000);
+            
+        }, 2000);
+    });
+}

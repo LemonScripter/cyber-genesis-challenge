@@ -93,8 +93,22 @@ class AxiomValidator {
             if (this.cpu) this.cpu.lockForTransition(intent.tokenId || "internal");
             return { status: 'SAT', tokenId: intent.tokenId };
         } else {
-            const reason = intent.valid ? "Axiom Violation" : `Causality Breach (${intent.reason || 'No IRQ'})`;
-            return { status: 'UNSAT', reason: reason };
+            // [HU] Strukturált hiba-visszajelzés a UI-nak
+            // [EN] Structured error feedback for the UI
+            let errorCode = "AXIOM_VIOLATION";
+            let reason = "The proposed state transition violates system invariants.";
+
+            if (!intent.valid) {
+                errorCode = "CAUSALITY_BREACH";
+                reason = `Causal chain broken: ${intent.reason || 'No IRQ'}`;
+            }
+
+            return { 
+                status: 'UNSAT', 
+                code: errorCode,
+                reason: reason,
+                intent: intent
+            };
         }
     }
 }
