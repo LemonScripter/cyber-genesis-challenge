@@ -1,0 +1,31 @@
+  BioOS: Szakmai validációs jelentés (v5.2.1)
+
+  1. Az architektúra alapelvei
+  A BioOS nem egy hagyományos végpontvédelmi szoftver (EDR), hanem egy Ring 0 szintű folyamat-validációs réteg. Működése a digitális okozatisági zártság
+  (Digital Causal Closure) elvén alapul, amely a rendszer invariáns végpontjai között kényszeríti ki a pozitív műveletsorokat. Míg az alkalmazások és
+  támadási minták folyamatosan változnak, a fizikai emberi bemenet (WDF megszakítás) és a kernel szintű kimenet (FltMgr IRP) stabil NT primitívek maradnak.
+
+  2. Kauzális láncolat és szál-öröklődés
+  A rendszer minden kritikus állapotváltozást egy hardver-szintű eseményig vezet vissza. A hitelesített bemenet egy hatókör-vektort generál, amely
+  meghatározza az engedélyezett műveleti kódot, a célkontextust és a memória-kvótát. Ez a jogosultság a COM és RPC hívások során is megmarad a szál-szintű
+  öröklődés révén, így a token csak az aktuális feladatot végző worker thread számára elérhető.
+
+  3. Memóriabiztonság és tranzakcionális integritás
+  A BioOS atomi tranzakciós modellt alkalmaz. Minden írási művelet először egy elkülönített átmeneti tárolóba kerül, és csak a formális verifikáció sikere
+  után commitolódik a tényleges memóriaszegmensbe. Ez kiküszöböli a Use-After-Free jellegű memóriahibákat és a szinkronizációs ellentmondásokból (pl.
+  TOCTOU) eredő sebezhetőségeket.
+
+  4. Az empirikus bizonyítás módszertana
+  A sandbox a BioOS kernel-architektúra formális operacionális modelljeként szolgál. A logikai modell és a fizikai hardveres végrehajtás közötti izomorf
+  jelleg garantálja, hogy a sandbox környezetben igazolt és matematikailag levezetett biztonsági tulajdonságok a CPU-n belüli végrehajtás során is
+  érvényesülnek. Ami a logikai modellben kauzálisan zárt, az a fizikai hardveren is áttörhetetlen marad.
+
+  5. Fenyegetettségi modell és korlátok
+   * Kivédett támadások: A rendszer matematikai bizonyossággal megállítja az autonóm háttérfolyamatokat, az in-memory zsarolóprogramokat, a
+     folyamat-injektálást (Process Hollowing) és a jogosulatlan kernel-szintű I/O műveleteket.
+   * Hatókörön kívüli fenyegetések: A BioOS jellegéből adódóan nem véd a fizikai jelenlétet igénylő hardveres HID-emulátorok (jitter-hamisítás), valamint a
+     kernel-szintű szűrőket (WFP/FltMgr) szándékosan megkerülő, speciális rootkitek ellen.
+
+  6. Oldalcsatorna-védelem
+  A verifikációs folyamat állandó idejű algoritmusokat használ, amelyeket mesterséges entrópia-befecskendezéssel (biometriai jitter szimuláció) egészít ki.
+  Ez megakadályozza, hogy a támadók nagy felbontású időméréssel adatokat nyerjenek ki a rendszer belső állapotáról.

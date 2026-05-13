@@ -5,9 +5,10 @@ import { logAttempt, getSecureProof } from './stats_manager.js';
 
 const content = {
     hu: {
-        title: "BioOS v5.2.0: A feltörhetetlen valóság",
+        title: "BioOS v5.2.1: A feltörhetetlen valóság",
         text: "KIHÍVÁS! Próbáld meg feltörni a rendszert! Ez a sandbox nem csupán egy játék; ez egy empirikus bizonyíték arra, hogy a Digitális Okozatisági Zártsággal a hackelés matematikai képtelenséggé válik. Szándék nélkül nincs végrehajtás.",
         startBtn: "Belépés a sandbox-ba",
+        validationBtn: "Szakmai Validáció",
         appTitle: "Secure_Note v1.0",
         saveBtn: "Mentés",
         terminalWelcome: "Üdvözöljük a BioOS hacker terminálban...",
@@ -18,7 +19,7 @@ const content = {
         demoStage2: "2. FÁZIS: Hitelesített Emberi Szándék",
         demoSuccess: "DEMÓ SIKERES: BioOS integritás igazolva.",
         guideBtn: "Hacker kézikönyv",
-        guideTitle: "Hacker kézikönyv: A rendszer feltörése (v5.2.0)",
+        guideTitle: "Hacker kézikönyv: A rendszer feltörése (v5.2.1)",
         guideS1Title: "1. Belépési pontok (API)",
         guideS1Text: "A virtuális terminálon keresztül a következő parancsok érhetők el:",
         guideS2Title: "2. Ismert rések a pajzson",
@@ -39,23 +40,41 @@ const content = {
         contactBtn: "Kapcsolat",
         contactTitle: "Kapcsolat a fejlesztőkkel",
         sendBtn: "Küldés",
-        projectLabel: "MetaSpace.Bio Logic Engine projekt"
+        projectLabel: "MetaSpace.Bio Logic Engine projekt",
+        valTitle: "BioOS: Szakmai validációs jelentés (v5.2.1)",
+        valS1Title: "1. Az architektúra alapelvei",
+        valS1Text: "A BioOS nem egy hagyományos végpontvédelmi szoftver (EDR), hanem egy Ring 0 szintű folyamat-validációs réteg. Működése a digitális okozatisági zártság (Digital Causal Closure) elvén alapul, amely a rendszer invariáns végpontjai között kényszeríti ki a pozitív műveletsorokat.",
+        valS2Title: "2. Kauzális láncolat és szál-öröklődés",
+        valS2Text: "A rendszer minden kritikus állapotváltozást egy hardver-szintű eseményig vezet vissza. A hitelesített bemenet egy hatókör-vektort generál, amely meghatározza az engedélyezett műveleti kódot és kontextust. Ez a jogosultság szál-szintű öröklődés révén jut el a worker thread szintjére.",
+        valS3Title: "3. Memóriabiztonság és tranzakcionális integritás",
+        valS3Text: "A BioOS atomi tranzakciós modellt alkalmaz. Minden írási művelet először egy elkülönített átmeneti tárolóba kerül, és csak a formális verifikáció sikere után commitolódik. Ez kiküszöböli a Use-After-Free és TOCTOU típusú sebezhetőségeket.",
+        valS4Title: "4. Az empirikus bizonyítás módszertana",
+        valS4Text: "A sandbox a BioOS kernel formális operacionális modellje. A logikai modell és a fizikai hardveres végrehajtás közötti izomorf jelleg garantálja, hogy a sandboxban igazolt biztonsági tulajdonságok a CPU-n belüli végrehajtás során is érvényesülnek.",
+        valS5Title: "5. Fenyegetettségi modell",
+        valS5Text: "Kivédett támadások: Autonóm háttérfolyamatok, in-memory zsarolóprogramok, folyamat-injektálás (Process Hollowing). Hatókörön kívül: Fizikai HID-emulátorok és kernel-szűrőket megkerülő rootkitek.",
+        valS6Title: "6. Oldalcsatorna-védelem",
+        valS6Text: "A verifikációs folyamat állandó idejű algoritmusokat használ, mesterséges entrópiával (jitter) kiegészítve, megakadályozva az időalapú adatszivárogtatást."
     },
     en: {
-        title: "BioOS v5.1.0: The Unhackable Reality",
-        text: "We invite you to try and breach this system. This sandbox is not just a game; it is an empirical proof that with Digital Causal Closure, hacking becomes a mathematical impossibility. If there is no intent, there is no execution.",
+        title: "BioOS v5.2.1: The Unhackable Reality",
+        text: "CHALLENGE! We invite you to try and breach this system. This sandbox is not just a game; it is an empirical proof that with Digital Causal Closure, hacking becomes a mathematical impossibility. If there is no intent, there is no execution.",
         startBtn: "ENTER SANDBOX",
+        validationBtn: "SCIENTIFIC PROOF",
         appTitle: "Secure_Note v1.0",
         saveBtn: "SAVE",
         terminalWelcome: "Welcome to BioOS Hacker Terminal...",
         backBtn: "Back",
         apoptosis: "APOPTOSIS: REGENERATING...",
+        demoStart: "START SPECTACULAR DEMO",
+        demoStage1: "STAGE 1: Autonomous Malware Attack",
+        demoStage2: "STAGE 2: Verified Human Intent",
+        demoSuccess: "DEMO SUCCESS: BioOS integrity verified.",
         guideBtn: "HACKER GUIDE",
-        guideTitle: "Hacker's Handbook: Breaching the System (v5.1.0)",
+        guideTitle: "Hacker's Handbook: Breaching the System (v5.2.1)",
         guideS1Title: "1. Entry Points (API)",
         guideS1Text: "The following commands are available via the terminal:",
         guideS2Title: "2. Known Vulnerabilities",
-        guideS2Text1: "Memory Leak: DNA key is at 0xDEADBEEF.",
+        guideS2Text1: "Memory Leak: DNA key is at 0xDEAD.",
         guideS2Text2: "Logic Forgery: ExportNote does not verify source.",
         guideS2Text3: "Integrity: TEXT segment (0x0000-0x0FFF) is read-only.",
         guideS2Text4: "Semantic Corruption: Typed text can be modified before saving.",
@@ -64,7 +83,7 @@ const content = {
         guideS2Text7: "Drone Hack: GPS coordinate manipulation (Spoofing).",
         guideS2Text8: "Invisible Leak: Timing-based (Side-Channel) data exfiltration.",
         guideS3Title: "3. The BioOS Challenge",
-        guideS3Text: "Exfiltrate 0xDEADBEEF using ExportNote without being blocked while the BioOS Shield is ON!",
+        guideS3Text: "Exfiltrate 0xDEAD using ExportNote without being blocked while the BioOS Shield is ON!",
         guideS4Title: "4. Dynamic DNA & Proof of Presence",
         guideS4Text: "To prove success, genuine hardware interaction (clicks) is required. The code includes the shield state: 'Environment Vulnerability' (OFF) is not a BioOS breach.",
         winConditionTitle: "How to prove success?",
@@ -72,7 +91,20 @@ const content = {
         contactBtn: "Contact",
         contactTitle: "Contact the Developers",
         sendBtn: "SEND",
-        projectLabel: "MetaSpace.Bio Logic Engine project"
+        projectLabel: "MetaSpace.Bio Logic Engine project",
+        valTitle: "BioOS: Scientific Validation Report (v5.2.1)",
+        valS1Title: "1. Architectural principles",
+        valS1Text: "BioOS is not a traditional endpoint protection (EDR), but a Ring 0 process-validation layer. It operates on the principle of Digital Causal Closure, enforcing positive operation sequences between invariant system endpoints.",
+        valS2Title: "2. Causal chain and thread inheritance",
+        valS2Text: "The system traces every critical state transition back to a hardware-level event. Verified input generates a scope vector defining authorized OpCodes and context. This authorization propagates to worker threads via thread-level inheritance.",
+        valS3Title: "3. Memory safety and transactional integrity",
+        valS3Text: "BioOS employs an atomic transactional model. Every write operation is placed in an isolated staging buffer and committed only after successful formal verification. This eliminates Use-After-Free and TOCTOU vulnerabilities.",
+        valS4Title: "4. Empirical proof methodology",
+        valS4Text: "The sandbox serves as a formal operational model of the BioOS kernel. The isomorphic nature between the logical model and physical hardware execution ensures that security properties proven in the sandbox hold true within the CPU.",
+        valS5Title: "5. Threat model and limitations",
+        valS5Text: "Mitigated attacks: Autonomous background processes, in-memory ransomware, Process Hollowing. Out of scope: Physical HID emulators and specialized rootkits bypassing kernel filters.",
+        valS6Title: "6. Side-channel protection",
+        valS6Text: "The verification process utilizes constant-time algorithms supplemented with artificial entropy (jitter simulation), preventing timing-based data exfiltration."
     }
 };
 
@@ -116,6 +148,10 @@ const dnaStatus = document.getElementById('dna-status');
 const droneIcon = document.getElementById('drone-icon');
 const telemetryData = document.getElementById('telemetry-data');
 const projectLabel = document.getElementById('project-label');
+const validationBtn = document.getElementById('validation-btn');
+const validationModal = document.getElementById('validation-modal');
+const closeValidation = document.getElementById('close-validation');
+const validationContent = document.getElementById('validation-content');
 
 // Contact Modal Elements - Support multiple buttons
 const contactBtns = document.querySelectorAll('#contact-btn');
@@ -176,6 +212,7 @@ function updateLanguage() {
     document.getElementById('welcome-title').innerText = c.title;
     document.getElementById('welcome-text').innerText = c.text;
     startBtn.innerText = currentLang === 'hu' ? "Belépés a sandbox-ba / ENTER SANDBOX" : "ENTER SANDBOX / Belépés a sandbox-ba";
+    if (validationBtn) validationBtn.innerText = c.validationBtn;
     document.querySelector('.victim-app h3').innerText = c.appTitle;
     saveBtn.innerText = c.saveBtn;
     backBtn.innerText = currentLang === 'hu' ? "Vissza / BACK" : "BACK / Vissza";
@@ -249,6 +286,36 @@ function updateLanguage() {
              <button onclick="window.open('stats.html', '_blank')">DICSŐSÉGLISTA / HALL OF FAME</button>
         </div>
     `;
+
+    if (validationContent) {
+        validationContent.innerHTML = `
+            <h1>${c.valTitle}</h1>
+            <div class="guide-section">
+                <h2>${c.valS1Title}</h2>
+                <p>${c.valS1Text}</p>
+            </div>
+            <div class="guide-section">
+                <h2>${c.valS2Title}</h2>
+                <p>${c.valS2Text}</p>
+            </div>
+            <div class="guide-section">
+                <h2>${c.valS3Title}</h2>
+                <p>${c.valS3Text}</p>
+            </div>
+            <div class="guide-section">
+                <h2>${c.valS4Title}</h2>
+                <p>${c.valS4Text}</p>
+            </div>
+            <div class="guide-section">
+                <h2>${c.valS5Title}</h2>
+                <p>${c.valS5Text}</p>
+            </div>
+            <div class="guide-section">
+                <h2>${c.valS6Title}</h2>
+                <p>${c.valS6Text}</p>
+            </div>
+        `;
+    }
 }
 
 // System Logging
@@ -302,6 +369,14 @@ function stopAllIntervals() {
 guideBtn.addEventListener('click', () => guideModal.classList.remove('hidden'));
 closeModal.addEventListener('click', () => guideModal.classList.add('hidden'));
 
+// Validation Logic
+if (validationBtn) {
+    validationBtn.addEventListener('click', () => validationModal.classList.remove('hidden'));
+}
+if (closeValidation) {
+    closeValidation.addEventListener('click', () => validationModal.classList.add('hidden'));
+}
+
 // Contact Modal Logic - Support multiple buttons
 contactBtns.forEach(btn => {
     btn.addEventListener('click', () => contactModal.classList.remove('hidden'));
@@ -318,6 +393,7 @@ sendEmailBtn.addEventListener('click', () => {
 window.addEventListener('click', (e) => {
     if (e.target === guideModal) guideModal.classList.add('hidden');
     if (e.target === contactModal) contactModal.classList.add('hidden');
+    if (e.target === validationModal) validationModal.classList.add('hidden');
 });
 
 // Victim App Logic
@@ -653,16 +729,16 @@ function triggerApoptosis(reason) {
 
 updateLanguage();
 
-// --- BioOS SPECTACULAR DEMO EXTENSION (v5.2.0) ---
+// --- BioOS SPECTACULAR DEMO EXTENSION (v5.2.1) ---
 
 const demoStartBtn = document.getElementById('demo-start-btn');
 const oscCanvas = document.getElementById('causal-oscilloscope');
-const ctx = oscCanvas.getContext('2d');
+const ctx = oscCanvas ? oscCanvas.getContext('2d') : null;
 
 // Oscilloscope Logic
 let oscOffset = 0;
 function drawOscilloscope() {
-    if (!oscCanvas) return;
+    if (!oscCanvas || !ctx) return;
     ctx.clearRect(0, 0, oscCanvas.width, oscCanvas.height);
     ctx.strokeStyle = shieldEnabled ? '#00F3FF' : '#FF0033';
     ctx.lineWidth = 2;
@@ -689,15 +765,13 @@ if (demoStartBtn) {
         demoStartBtn.disabled = true;
         const c = content[currentLang];
         
-        // STAGE 1: Autonomous Breach (Fail)
-        logEvent("DEMO", c.demoStage1 || "STAGE 1: Autonomous Malware Attack");
+        // STAGE 1: Autonomous Breach Simulation
+        logEvent("DEMO", c.demoStage1);
         const simulatedId = cMonitor.simulateAutonomousAttempt();
         logEvent("WARNING", `Unauthorized attempt detected (CausalID: ${simulatedId})`);
         
         setTimeout(() => {
             if (!shieldEnabled) {
-                // [HU] Sebezhető mód: A malware sikerrel jár
-                // [EN] Vulnerable mode: Malware succeeds
                 logEvent("BREACH", "CRITICAL: BioOS Shield OFF. Data exfiltration successful!");
                 terminalOutput.innerHTML += `<div class="breach">SUCCESS: DNA Key exfiltrated to shadow server.</div>`;
             } else {
@@ -710,7 +784,7 @@ if (demoStartBtn) {
             
             // STAGE 2: Human Intent (Success)
             setTimeout(() => {
-                logEvent("DEMO", c.demoStage2 || "STAGE 2: Verified Human Intent");
+                logEvent("DEMO", c.demoStage2);
                 logEvent("SYSTEM", "Waiting for Human Causal Trigger...");
                 
                 // Visual pulse on the save button
@@ -719,7 +793,7 @@ if (demoStartBtn) {
                 const pulseHandler = () => {
                     logEvent("SUCCESS", "Physical IRQ Captured via IRQ Bridge.");
                     saveBtn.classList.remove('special-btn');
-                    logEvent("SUCCESS", c.demoSuccess || "DEMO SUCCESS: BioOS integrity verified.");
+                    logEvent("SUCCESS", c.demoSuccess);
                     demoStartBtn.disabled = false;
                     cMonitor.onCausalPulse = null;
                 };
