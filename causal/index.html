@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MetaSpace — kazuális cáfolat és szimulátor</title>
+  <title>A szándék eldönthetetlen. Az ok nem. — MetaSpace.Bio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -536,7 +536,7 @@
     .footer-note { margin-top: 0.5rem; font-size: 0.8rem; }
 
     .lang-switch {
-      position: absolute; top: 0; right: 0;
+      float: right; margin-top: -0.15rem;
       font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em;
     }
     .lang-switch a {
@@ -569,13 +569,13 @@
 <body>
 
   <div class="wrap container">
-    <div class="lang-switch">
+    <header>
+          <div class="lang-switch">
       <a href="index.html" class="on">HU</a><a href="en.html" class="">EN</a>
     </div>
-    <header>
-      <div class="eyebrow">MetaSpace.Bio tudásbázis · Kazuális védelmi tanulmány</div>
-      <h1>Mit tehet a bezárt fél?</h1>
-      <p class="subtitle">Anatómiai és kazuális cáfolat a SolarWinds, a CrowdStrike és a futásidejű formális verifikáció korlátairól.</p>
+    <div class="eyebrow">MetaSpace.Bio · DCC Ring 0 · oksági védelem</div>
+      <h1>A szándék eldönthetetlen.<br>Az ok nem.</h1>
+      <p class="subtitle">Egy program szándékát futásidőben nem lehet eldönteni — azt viszont igen, hogy a hatása mögött áll-e engedély. Válasz a SolarWinds-, a CrowdStrike- és a futásidejű-verifikáció kifogásokra, <strong>mért kernel-verdiktekkel</strong>.</p>
     </header>
 
     <div class="objection-quote">
@@ -585,7 +585,7 @@
 
     <div class="caveat scope-note">
       <span class="caveat-label">Hogyan olvasd — melyik fok, melyik platformon</span>
-      Az alábbi kazuális érvelés a <strong>DCC Ring 0-ra</strong> vonatkozik: eBPF LSM hookok, amelyek a
+      Az alábbi oksági érvelés a <strong>DCC Ring 0-ra</strong> vonatkozik: eBPF LSM hookok, amelyek a
       kernelben futnak. Ez a fok <strong>Linuxot igényel</strong> (<code>CONFIG_BPF_LSM=y</code>, BTF, saját
       kernel — konténerben nem megy). Ahol ez nincs meg, ott a hordozható, szoftveres fokok védenek,
       gyengébb garanciával. A különbséget végig jelöljük:
@@ -752,7 +752,7 @@
           levelezőprogramodat</strong> nyitja meg a megírt üzenettel. Ez az oldal semmit nem küld el
           és nem tárol.</p>
         <label class="contact-label" for="c-subj">Tárgy</label>
-        <input class="contact-input" id="c-subj" type="text" value="MetaSpace.Bio — kazuális védelem" />
+        <input class="contact-input" id="c-subj" type="text" value="MetaSpace.Bio — oksági védelem" />
         <label class="contact-label" for="c-msg">Üzenet</label>
         <textarea class="contact-input" id="c-msg" rows="5" placeholder="Írd ide a kérdésed vagy az ellenvetésed…"></textarea>
         <button class="fire-btn" onclick="openMail()">Megnyitás a levelezőprogramban</button>
