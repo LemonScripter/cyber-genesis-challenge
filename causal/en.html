@@ -695,8 +695,15 @@
             that it holds against a party that is <strong>already root</strong>.
             <code>bpftool prog detach</code> / <code>unload</code> is a deliberate rollback path, so root can
             disable the defence by hand &mdash; the root of trust remains the protection of root access.
-            Two attack tests aimed at this are <strong>deliberately deferred</strong> and have never run:
-            user namespace + <code>CAP_BPF</code> map tampering, and verifier bypass via BTF type confusion.
+            Two attack tests aimed at this were <strong>measured on 2026-08-07</strong>.
+            <strong>T19</strong> (user namespace &rarr; map tamper): inside a user namespace an unprivileged
+            user gets full in-namespace capabilities (<code>euid=0</code>), yet listing and updating the DCC
+            <code>config_map</code> both return <strong>&ldquo;Operation not permitted&rdquo;</strong> &mdash; the
+            namespace&rsquo;s <code>CAP_BPF</code> is not real authority over init-namespace objects. <strong>The
+            attack fails.</strong> <strong>T20</strong> (verifier bypass via BTF type confusion): the premise is
+            <strong>unreachable</strong> &mdash; with <code>unprivileged_bpf_disabled=2</code> an unprivileged
+            <code>bpf()</code> is <code>-EPERM</code>, so nothing can be submitted to the verifier. &#9888; This
+            closure is provided by the kernel/OS configuration, not by the DCC.
             <strong>Closed 2026-08-07:</strong> the <code>comm</code>-based allowlist could be spoofed with
             <code>prctl(PR_SET_NAME)</code>; it was replaced with <strong>inode-based identity</strong> (the
             executable&rsquo;s inode+dev pair, written by the kernel at exec and not forgeable from the process).

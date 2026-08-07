@@ -643,9 +643,15 @@
             SolarWinds/ransomware-osztály. Amit <strong>nem</strong> állítunk: hogy egy <strong>már root-jogú</strong>
             fél ellen is tart. A <code>bpftool prog detach</code> / <code>unload</code> szándékos rollback-út,
             azaz root kézzel hatálytalaníthatja a védelmet — ezért a bizalmi gyökér a root-hozzáférés
-            őrzése marad. Két erre irányuló támadási teszt <strong>tudatosan halasztott</strong> és még nem futott:
-            <strong>T19</strong> (user namespace + <code>CAP_BPF</code> → BPF-map tamper) és <strong>T20</strong>
-            (verifier-megkerülés BTF type confusionnal). <strong>Lezárva 2026-08-07:</strong> a <code>comm</code>-alapú
+            őrzése marad. Két erre irányuló támadási tesztet <strong>2026-08-07-én lemértünk</strong>.
+            <strong>T19</strong> (user namespace → BPF-map tamper): egy jogosulatlan felhasználó user
+            namespace-ben teljes NS-en belüli jogot kap (<code>euid=0</code>, minden capability), mégis a
+            DCC <code>config_map</code> listázása és módosítása is <strong>„Operation not permitted"</strong> —
+            a NS-beli <code>CAP_BPF</code> nem valódi jog az init-namespace objektumai fölött. <strong>A támadás
+            bukik.</strong> <strong>T20</strong> (verifier-megkerülés BTF type confusionnal): az előfeltétel
+            <strong>elérhetetlen</strong> — <code>unprivileged_bpf_disabled=2</code> mellett a jogosulatlan
+            <code>bpf()</code> eleve <code>-EPERM</code>, tehát a támadó be sem tud tölteni programot a verifierbe.
+            ⚠️ Ezt a zárást a <strong>kernel/OS konfiguráció</strong> adja, nem a DCC. <strong>Lezárva 2026-08-07:</strong> a <code>comm</code>-alapú
             whitelist <code>prctl(PR_SET_NAME)</code>-mel hamisítható volt; a helyére <strong>inode-alapú
             azonosítás</strong> került (a futtatható fájl inode+dev párja, amit a kernel az exec pillanatában ír, a
             folyamat nem tudja felülírni). <strong>Blokkoló módban mérve:</strong> a <code>prctl</code>-spoof
