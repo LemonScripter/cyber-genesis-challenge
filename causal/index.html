@@ -544,6 +544,26 @@
       border: 1px solid var(--card-border); border-radius: 4px; margin-left: 0.3rem;
     }
     .lang-switch a.on { color: var(--accent-cyan); border-color: var(--accent-cyan); }
+
+    .modal-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: rgba(3,6,7,0.82); backdrop-filter: blur(3px);
+      padding: 2rem 1.5rem; overflow-y: auto;
+    }
+    .modal-backdrop.open { display: flex; align-items: flex-start; justify-content: center; }
+    .modal-card {
+      position: relative; width: 100%; max-width: 34rem; margin-top: 6vh;
+      background-color: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 2rem;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+      animation: fadeIn 0.25s ease;
+    }
+    .modal-close {
+      position: absolute; top: 0.8rem; right: 0.9rem;
+      background: none; border: none; color: var(--text-muted);
+      font-size: 1.6rem; line-height: 1; cursor: pointer; padding: 0.2rem 0.5rem;
+    }
+    .modal-close:hover { color: var(--text); }
   </style>
 </head>
 <body>
@@ -724,23 +744,24 @@
     </section>
 
     <!-- KAPCSOLAT + LABLEC -->
-    <section class="ladder-section" id="kapcsolat">
-      <div class="ladder-title">Kapcsolat</div>
-      <div class="contact-box">
-        <p class="contact-lead">Kérdésed vagy ellenvetésed van a fentiekhez? Írd meg — a gomb a
-          <strong>saját levelezőprogramodat</strong> nyitja meg a megírt üzenettel. Ez az oldal
-          semmit nem küld el és nem tárol.</p>
+    <div class="modal-backdrop" id="contact-modal" onclick="if(event.target===this)closeContact()">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+        <button class="modal-close" onclick="closeContact()" aria-label="Bezárás">&times;</button>
+        <div class="ladder-title" id="contact-title">Kapcsolat</div>
+        <p class="contact-lead">Kérdésed vagy ellenvetésed van? A gomb a <strong>saját
+          levelezőprogramodat</strong> nyitja meg a megírt üzenettel. Ez az oldal semmit nem küld el
+          és nem tárol.</p>
         <label class="contact-label" for="c-subj">Tárgy</label>
         <input class="contact-input" id="c-subj" type="text" value="MetaSpace.Bio — kazuális védelem" />
         <label class="contact-label" for="c-msg">Üzenet</label>
         <textarea class="contact-input" id="c-msg" rows="5" placeholder="Írd ide a kérdésed vagy az ellenvetésed…"></textarea>
         <button class="fire-btn" onclick="openMail()">Megnyitás a levelezőprogramban</button>
       </div>
-    </section>
+    </div>
 
     <footer class="site-footer">
       <div>© <span id="c-year"></span> <strong>MetaSpace.Bio Logic Engine projekt</strong> ·
-        <a href="#kapcsolat" style="color:var(--accent-cyan);text-decoration:none">Kapcsolat</a></div>
+        <a href="#" onclick="openContact();return false;" style="color:var(--accent-cyan);text-decoration:none">Kapcsolat</a></div>
       <div class="footer-note">A lapon szereplő mérések egyetlen tesztgépen készültek, dátumozva és
         reprodukálható scriptekkel. Üzemi telepítést nem írnak le.<br>
         A mérőscriptek, a jegyzőkönyvek és az állítás-ledger nyilvánosan ellenőrizhetők:
@@ -863,6 +884,18 @@
     }
 
     document.getElementById('c-year').textContent = new Date().getFullYear();
+
+    function openContact() {
+      document.getElementById('contact-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeContact() {
+      document.getElementById('contact-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeContact();
+    });
 
     function openMail() {
       const subj = document.getElementById('c-subj').value || 'MetaSpace.Bio';
