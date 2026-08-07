@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MetaSpace &mdash; causal containment: answer and measured run</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+      --bg: #0B0F10;
+      --card-bg: #111618;
+      --card-border: #1E2528;
+      --text: #E3E9EA;
+      --text-muted: #8E9D9F;
+      
+      --accent-cyan: #3FB3BC;
+      --accent-cyan-glow: rgba(63, 179, 188, 0.15);
+      --accent-gold: #D69A52;
+      --accent-red: #D4696C;
+      --accent-red-glow: rgba(212, 105, 108, 0.15);
+      --accent-green: #52D68C;
+      --accent-green-glow: rgba(82, 214, 140, 0.15);
+      
+      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding: 2rem 1.5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 68rem;
+      margin: 0 auto;
+    }
+
+    /* --- HEADER --- */
+    header {
+      margin-bottom: 3.5rem;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -1.5rem;
+      left: 0;
+      width: 6rem;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-cyan), transparent);
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent-cyan);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.8rem;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 44rem;
+      font-weight: 300;
+    }
+
+    /* --- THE CORE QUESTION BOX --- */
+    .objection-quote {
+      background: linear-gradient(135deg, #151011, #131215);
+      border-left: 3px solid var(--accent-red);
+      padding: 1.5rem 2rem;
+      border-radius: 0 8px 8px 0;
+      margin: 2.5rem 0;
+    }
+
+    .objection-quote p {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: #F4D5D6;
+    }
+
+    .objection-quote span {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-red);
+      margin-top: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* --- GRID LAYOUT FOR SECTIONS --- */
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2.5rem;
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* --- TABS SYSTEM --- */
+    .tabs-container {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .tab-header {
+      display: flex;
+      border-bottom: 1px solid var(--card-border);
+      background-color: rgba(0,0,0,0.2);
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 1.2rem 1rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-align: center;
+      position: relative;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background-color: rgba(255,255,255,0.02);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-cyan);
+      background-color: rgba(63, 179, 188, 0.03);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    .tab-content {
+      padding: 2rem;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-content h3 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .tab-content p {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .key-points {
+      margin: 1.5rem 0;
+      padding-left: 1.2rem;
+    }
+
+    .key-points li {
+      margin-bottom: 0.8rem;
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    .key-points li strong {
+      color: var(--accent-cyan);
+    }
+
+    /* --- INTERACTIVE SIMULATOR --- */
+    .simulator-container {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .sim-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .sim-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.3rem;
+    }
+
+    .sim-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Mode selector */
+    .mode-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .mode-btn {
+      background-color: #161D20;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .mode-btn:hover {
+      border-color: var(--text-muted);
+      color: var(--text);
+    }
+
+    .mode-btn.active[data-mode="edr"] {
+      background-color: var(--accent-red-glow);
+      border-color: var(--accent-red);
+      color: #FFB3B5;
+    }
+
+    .mode-btn.active[data-mode="membrane"] {
+      background-color: var(--accent-cyan-glow);
+      border-color: var(--accent-cyan);
+      color: #B3F4FF;
+    }
+
+    /* Terminal console mockup */
+    .terminal {
+      background-color: #050708;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      padding: 1.2rem;
+      flex-grow: 1;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    }
+
+    .terminal-line {
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .terminal-line.cmd {
+      color: #9EC0E5;
+    }
+    .terminal-line.cmd::before {
+      content: '$ ';
+      color: var(--accent-cyan);
+    }
+
+    .terminal-line.info {
+      color: var(--text-muted);
+    }
+
+    .terminal-line.success {
+      color: var(--accent-green);
+    }
+
+    .terminal-line.error {
+      color: var(--accent-red);
+      font-weight: 500;
+    }
+
+    .terminal-line.warn {
+      color: var(--accent-gold);
+    }
+
+    /* Simulation Trigger Button */
+    .fire-btn {
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, #1B7882, #0D6E77);
+      border: none;
+      color: white;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(13, 110, 119, 0.3);
+    }
+
+    .fire-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(13, 110, 119, 0.4);
+    }
+
+    .fire-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* --- LADDER FOOTER --- */
+    .ladder-section {
+      margin-top: 4rem;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 2.5rem;
+    }
+
+    .ladder-title {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .ladder {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .ladder {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ladder-step {
+      background-color: rgba(255,255,255,0.01);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .ladder-step:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      line-height: 1;
+      margin-bottom: 0.8rem;
+    }
+
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Badge styles */
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .badge.hard {
+      background-color: var(--accent-cyan-glow);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(63, 179, 188, 0.3);
+    }
+
+    .badge.soft {
+      background-color: rgba(214, 154, 82, 0.15);
+      color: var(--accent-gold);
+      border: 1px solid rgba(214, 154, 82, 0.3);
+    }
+
+    .badge.plat {
+      background-color: rgba(142, 157, 159, 0.12);
+      color: var(--text-muted);
+      border: 1px solid rgba(142, 157, 159, 0.25);
+      margin-left: 0.4rem;
+    }
+
+    /* --- SCOPE / CAVEAT --- */
+    .caveat {
+      margin: 1.25rem 0 0.25rem;
+      padding: 0.95rem 1.15rem;
+      background-color: rgba(214, 154, 82, 0.06);
+      border-left: 2px solid var(--accent-gold);
+      border-radius: 0 6px 6px 0;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .caveat-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: 0.4rem;
+    }
+
+    .caveat strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .caveat code,
+    .key-points code,
+    .tab-content p code,
+    .step-desc code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      color: var(--accent-cyan);
+    }
+
+    .scope-note {
+      margin: 0 0 2.5rem;
+      background-color: rgba(63, 179, 188, 0.05);
+      border-left-color: var(--accent-cyan);
+    }
+
+    .scope-note .caveat-label {
+      color: var(--accent-cyan);
+    }
+
+    .scope-note ul {
+      margin: 0.6rem 0 0;
+      padding-left: 1.1rem;
+    }
+
+    .scope-note li {
+      margin-bottom: 0.35rem;
+    }
+
+    /* --- KAPCSOLAT + LABLEC --- */
+    .contact-box { max-width: 42rem; }
+    .contact-lead { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.2rem; }
+    .contact-label {
+      display: block; font-family: var(--font-mono); font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--accent-cyan); margin: 0.9rem 0 0.35rem;
+    }
+    .contact-input {
+      width: 100%; background-color: #0B1013; color: var(--text);
+      border: 1px solid var(--card-border); border-radius: 6px;
+      padding: 0.7rem 0.9rem; font-family: var(--font-sans); font-size: 0.92rem;
+      resize: vertical;
+    }
+    .contact-input:focus { outline: none; border-color: var(--accent-cyan); }
+    .contact-box .fire-btn { margin-top: 1.2rem; }
+    .site-footer {
+      margin-top: 4rem; padding-top: 1.5rem;
+      border-top: 1px solid var(--card-border);
+      font-size: 0.85rem; color: var(--text-muted);
+    }
+    .site-footer strong { color: var(--text); font-weight: 500; }
+    .footer-note { margin-top: 0.5rem; font-size: 0.8rem; }
+
+    .lang-switch {
+      position: absolute; top: 0; right: 0;
+      font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em;
+    }
+    .lang-switch a {
+      color: var(--text-muted); text-decoration: none; padding: 0.3rem 0.55rem;
+      border: 1px solid var(--card-border); border-radius: 4px; margin-left: 0.3rem;
+    }
+    .lang-switch a.on { color: var(--accent-cyan); border-color: var(--accent-cyan); }
+  </style>
+</head>
+<body>
+
+  <div class="wrap container">
+    <div class="lang-switch">
+      <a href="index.html" class="">HU</a><a href="en.html" class="on">EN</a>
+    </div>
+    <header>
+      <div class="eyebrow">MetaSpace.Bio knowledge base &middot; Causal containment study</div>
+      <h1>What can the confined party do?</h1>
+      <p class="subtitle">An anatomical and causal answer to the SolarWinds, CrowdStrike and
+        runtime-formal-verification objections &mdash; with measured kernel verdicts, not assertions.</p>
+    </header>
+
+    <div class="objection-quote">
+      <p>&bdquo;...The SolarWinds update was validly signed, and the backdoor made ordinary API
+        calls with ordinary privileges. What would kernel-level monitoring see? Logically correct
+        instructions that fit the operating model. The problem is not the correctness of the
+        instructions but the intent &mdash; and intent cannot be verified mathematically at runtime...&rdquo;</p>
+      <span>&mdash; A well-founded industry doubt</span>
+    </div>
+
+    <div class="caveat scope-note">
+      <span class="caveat-label">How to read this &mdash; which rung, on which platform</span>
+      The argument below concerns <strong>DCC Ring 0</strong>: eBPF LSM programs running inside the
+      kernel. This rung <strong>requires Linux</strong> (<code>CONFIG_BPF_LSM=y</code>, BTF, its own
+      kernel &mdash; it does not work in a container). Where it is absent, the portable software rungs
+      apply, with a weaker guarantee. The difference is marked throughout:
+      <ul>
+        <li><strong>Level 1 &middot; WASM/WASI</strong> &mdash; platform-independent, but only for guest code
+          compiled to WASM. Denial is construction: a link error.</li>
+        <li><strong>Level 2 &middot; Ring 0 (eBPF LSM)</strong> &mdash; <strong>Linux</strong>, kernel &ge; 6.1.
+          Writes, reads, <code>exec</code> and <strong>network</strong> are all decided at kernel hooks and
+          inherited across <code>fork</code>. <strong>Starts in LOG-ONLY</strong>; blocking mode is a
+          deliberate, separate step.</li>
+        <li><strong>Level 3 &middot; Hook / interpreter</strong> &mdash; Windows, macOS, Linux. Where no kernel
+          rung exists, tool-call mediation and language chokepoints apply:
+          <strong>recognition-based, soft containment</strong>.</li>
+      </ul>
+    </div>
+
+    <div class="grid">
+      <div class="tabs-container">
+        <div class="tab-header">
+          <button class="tab-btn active" onclick="switchTab('solarwinds')">SolarWinds</button>
+          <button class="tab-btn" onclick="switchTab('crowdstrike')">CrowdStrike</button>
+          <button class="tab-btn" onclick="switchTab('sel4')">Formal Proof</button>
+          <button class="tab-btn" onclick="switchTab('patch')">Patch risk</button>
+        </div>
+
+        <div id="solarwinds" class="tab-content active">
+          <h3>Intent vs. touch</h3>
+          <p>The objection is exactly right about conventional EDR and antivirus: deciding
+            <strong>intent</strong> at runtime, over Turing-complete code, really is mathematically
+            undecidable.</p>
+          <p>MetaSpace.Bio <strong>abandons the intent question</strong>. It does not ask what the
+            update wants to do, but what it <strong>touches</strong>.</p>
+          <ul class="key-points">
+            <li><strong>We do not judge the instruction:</strong> the question is not whether the
+              instruction is &bdquo;correct&rdquo;, but whether the resource it wants to touch (a file or a
+              network target) is part of the state space declared in the <code>.bio</code>. Unlike
+              intent, that question is decidable.</li>
+            <li><strong>The chokepoint sits at the causal chain <span class="badge plat">Linux &middot; Ring 0</span>:</strong>
+              a protected effect requires a <strong>valid, time-boxed grant</strong>. A program cannot
+              issue one to itself: the <code>token_map</code> is <strong>frozen</strong> &mdash; user space,
+              including root, cannot write it. A process that starts on its own has no grant, so it does
+              not write. <strong>Measured 2026-08-07, in blocking mode:</strong> without a grant
+              <code>EPERM</code> &middot; with a fresh grant the write succeeds &middot; with an expired one
+              <code>EXPIRED</code>. <em>The original design used a physical keystroke as the root; measured,
+              that tracepoint does not exist on a modern kernel, so the root became an authenticated
+              request.</em></li>
+            <li><strong>Egress goes through the same gate <span class="badge plat">Linux &middot; Ring 0</span>:</strong>
+              the <code>socket_connect</code> <strong>and</strong> <code>socket_sendmsg</code> hooks judge
+              outbound traffic from the same chain. <code>sendmsg</code> had to be added because,
+              measured, <code>sendto()</code> &mdash; connectionless UDP, e.g. DNS-based exfiltration &mdash;
+              <strong>walked out even with the network guard switched on</strong>. &#9888; The network guard
+              ships <strong>disabled</strong>.</li>
+            <li><strong>Inheritance cannot be shed <span class="badge plat">Linux &middot; Ring 0</span>:</strong>
+              if the update spawns a child (<code>sh</code>, <code>python</code>),
+              <code>dcc_fork_inherit</code> carries the causal state over. The LSM hook is mandatory in
+              the kernel &mdash; <strong>unbypassable from Ring 3</strong>.</li>
+            <li><strong>Deletion and renaming are state changes too <span class="badge plat">Linux &middot; Ring 0</span>:</strong>
+              measured, the <code>file_permission</code> hook saw <strong>two</strong> of 13 ordinary file
+              operations &mdash; <code>unlink</code>, <code>rename</code>, <code>truncate</code> and
+              <code>mmap</code> writes went past it. <strong>Ransomware that encrypts by renaming never met
+              the defence.</strong> Eleven further hooks were attached; the ratio is now <strong>16/17</strong>.</li>
+          </ul>
+          <div class="caveat">
+            <span class="caveat-label">Enforcement is a deliberate switch</span>
+            Every eBPF program <strong>starts in LOG-ONLY</strong> (the blocking toggle defaults to 0),
+            and blocking mode is enabled only after the interference test &mdash; plus there is an
+            emergency-bypass map should a service enter a blocking loop. This is deliberate rollout
+            discipline (observe first, deny later), but it means &bdquo;the kernel refuses&rdquo; is true of
+            <strong>blocking mode</strong>, not of the default state.
+          </div>
+        </div>
+
+        <div id="crowdstrike" class="tab-content">
+          <h3>Who verifies the verifier?</h3>
+          <p>The CrowdStrike outage is the perfect example of a closed-source, proprietary,
+            third-party kernel driver running in Ring 0 introducing instability or supply-chain risk.</p>
+          <p>The structure of MetaSpace.Bio structurally eliminates the risk that <strong>originates in
+            Ring 0</strong> &mdash; but it answers only part of the second half of &bdquo;who verifies the
+            verifier?&rdquo; today:</p>
+          <ul class="key-points">
+            <li><strong>No kernel driver of our own <span class="badge plat">Linux &middot; Ring 0</span>:</strong>
+              DCC loads no third-party module. It runs as eBPF, which the <strong>kernel's own verifier</strong>
+              checks statically before load: bounded loops, no free pointer arithmetic. <strong>It cannot
+              panic the kernel</strong> &mdash; precisely the failure class behind the CrowdStrike outage.</li>
+            <li><strong>User-space isolation <span class="badge plat">Level 1</span>:</strong> the WASM/WASI
+              execution mode runs purely in user space with zero Ring 0 access. A fault in a WASM runtime
+              can at most stop its own process; it cannot blue-screen the operating system.</li>
+            <li><strong>Privilege-separated authority <span class="badge plat">Linux &middot; Ring 0</span>:</strong>
+              the application does not mint the grant. The <code>token_map</code> is <strong>frozen</strong>
+              (<code>bpf_map_freeze</code>): user space, including root, cannot write it directly &mdash;
+              issuance happens <strong>inside the kernel</strong> and can only be triggered with
+              <code>CAP_BPF</code>. The application may <em>ask</em> over a unix socket with a signed
+              request; the authority does not believe the identifier in the request but
+              <strong>asks the kernel who the caller is</strong> (<code>SO_PEERCRED</code>). Measured:
+              a corrupted signature &middot; a replayed request &middot; a request in another process's name
+              &middot; an over-long window &mdash; all rejected.</li>
+          </ul>
+          <div class="caveat">
+            <span class="caveat-label">How far the answer reaches</span>
+            The closure above holds against an <strong>unprivileged attacker</strong> &mdash; where it is
+            strong, and that is the real SolarWinds/ransomware class. What we do <strong>not</strong> claim:
+            that it holds against a party that is <strong>already root</strong>.
+            <code>bpftool prog detach</code> / <code>unload</code> is a deliberate rollback path, so root can
+            disable the defence by hand &mdash; the root of trust remains the protection of root access.
+            Two attack tests aimed at this are <strong>deliberately deferred</strong> and have never run:
+            user namespace + <code>CAP_BPF</code> map tampering, and verifier bypass via BTF type confusion.
+            It also remains open that the <code>comm</code>-based allowlist can be spoofed with
+            <code>prctl(PR_SET_NAME)</code> &mdash; it should be inode-based instead.
+          </div>
+        </div>
+
+        <div id="sel4" class="tab-content">
+          <h3>Verification amortization</h3>
+          <p>Proving the 10,000 lines of the seL4 microkernel really did take a decade, because the aim
+            was the correctness of the entire Turing-complete code. MetaSpace.Bio
+            <strong>does not verify arbitrary third-party code at runtime</strong>.</p>
+          <p>The core of the technology is <strong>verification amortization</strong>:</p>
+          <ul class="key-points">
+            <li><strong>Turing-incomplete constitution (.bio):</strong> the <code>.bio</code> language that
+              declares the rules is deliberately Turing-incomplete (no loops, no recursion). The state
+              space is therefore finite and exhaustively explorable.</li>
+            <li><strong>Z3 SMT solver:</strong> the constitution's correctness and consistency are proven
+              offline, before execution, by Z3 (on the order of 30 ms).</li>
+            <li><strong>O(1) runtime evaluation:</strong> at runtime the kernel proves no mathematics. It
+              compares a precompiled, static ruleset against the parameters of the call.</li>
+          </ul>
+          <div class="caveat">
+            <span class="caveat-label">What the proof covers, and what it assumes</span>
+            The Z3 result proves properties of the <strong>decision logic</strong>. The theorem's premises
+            include an unproven lemma: <em>every protected effect reaches a hook</em>. That was an
+            assumption, and measuring it is exactly what produced the coverage finding above &mdash; two of
+            thirteen. Hook coverage is finite and closable; it is not a matter of belief.
+          </div>
+        </div>
+
+        <div id="patch" class="tab-content">
+          <h3>Updatability vs. the fence</h3>
+          <p>A system that cannot be patched quickly stays defenceless once a vulnerability appears.
+            &bdquo;Updatable only with physical access&rdquo; would be a genuine operational risk at the level of
+            software code. MetaSpace.Bio therefore separates the <strong>software code</strong> from the
+            <strong>security fence (.bio)</strong>.</p>
+          <ul class="key-points">
+            <li><strong>Automatic code updates:</strong> the code of SolarWinds, or any program, may update
+              remotely and automatically, even in the field.</li>
+            <li><strong>An inviolable fence:</strong> because the membrane boundary (.bio) is static and
+              separate, a newly arriving version brings its zero-day inside the existing fence.</li>
+            <li><strong>Physical root of trust:</strong> only changing or disabling the security profile
+              requires higher-level (local or physical) approval, so a remote party cannot dismantle the
+              defence while legitimate patches run freely.</li>
+          </ul>
+          <div class="caveat">
+            <span class="caveat-label">Where the argument reverses &mdash; the root of trust is root access</span>
+            The fence is inviolable because changing it needs a <strong>different privilege</strong> than
+            running the protected program: loading rules requires <code>CAP_BPF</code>/root, the program
+            itself is Ring 3. A remote attacker cannot dismantle the <strong>fence</strong> &mdash;
+            <strong>unless they obtain root</strong>. DCC sharpens that distinction; it does not remove it.
+          </div>
+        </div>
+      </div>
+
+      <div class="simulator-container">
+        <div class="sim-header">
+          <div class="sim-title">Measured run &mdash; not a simulation</div>
+          <div class="sim-desc">The DCC track replays <strong>real kernel verdicts recorded on
+            2026-08-07</strong> (Debian 12, kernel 6.1.0-52-amd64, blocking mode). The EDR track is an
+            illustration, for contrast.</div>
+        </div>
+
+        <div class="mode-selector">
+          <button class="mode-btn active" data-mode="edr" onclick="setSimMode('edr')">Conventional EDR</button>
+          <button class="mode-btn" data-mode="membrane" onclick="setSimMode('membrane')">DCC Ring 0 &middot; measured</button>
+        </div>
+
+        <div class="terminal" id="console">
+          <div class="terminal-line info">[SYSTEM] Console ready. Pick a mode and start the run.</div>
+        </div>
+
+        <button class="fire-btn" onclick="runSimulation()">Replay the measured run</button>
+
+        <div class="caveat">
+          <span class="caveat-label">What this shows, and what it does not</span>
+          The DCC track replays <strong>real kernel verdicts</strong> from a measurement on 2026-08-07:
+          live blocking mode, a non-allowlisted probe process, and <strong>both directions</strong> of the
+          decision (no grant &rarr; denied &middot; valid grant &rarr; permitted &middot; expired &rarr; denied again).
+          <strong>What it does not show:</strong> a production state. The measurement was made on a single
+          disposable machine with a locally built binary; it is <strong>deployed nowhere</strong>. The
+          earlier <em>&bdquo;hardware IRQ as the causal root&rdquo;</em> narration has been removed: that
+          tracepoint did not exist on any kernel we measured.
+        </div>
+      </div>
+    </div>
+
+    <section class="ladder-section">
+      <div class="ladder-title">The three-rung ladder</div>
+      <div class="ladder">
+        <div class="ladder-step">
+          <span class="badge hard">Level 1 &middot; WASM</span><span class="badge plat">platform-independent</span>
+          <div class="step-num">1</div>
+          <div class="step-title">Cannot even name it</div>
+          <div class="step-desc">Guest code has zero ambient authority. Denial is not a decision but the
+            absence of a vocabulary (link-time isolation). The price: the code must be compiled to WASM.</div>
+        </div>
+
+        <div class="ladder-step">
+          <span class="badge hard">Level 2 &middot; Ring 0</span><span class="badge plat">Linux only</span>
+          <div class="step-num">2</div>
+          <div class="step-title">Does not execute</div>
+          <div class="step-desc">eBPF LSM hooks in the kernel (&ge; 6.1, <code>CONFIG_BPF_LSM=y</code>):
+            write, read, <code>exec</code>, network &mdash; without a valid causal grant, <code>-EPERM</code>.
+            Unbypassable from Ring 3, inherited across <code>fork</code>.</div>
+        </div>
+
+        <div class="ladder-step">
+          <span class="badge soft">Level 3 &middot; Hook</span><span class="badge plat">Win &middot; macOS &middot; Linux</span>
+          <div class="step-num">3</div>
+          <div class="step-title">Recognition chokepoint</div>
+          <div class="step-desc">Tool calls and language chokepoints (<code>socket</code>, <code>Popen</code>).
+            Flexible and runs everywhere, but what it does not recognise, it lets through (soft containment).
+            <strong>On Windows this is the only rung available today.</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ladder-section" id="contact">
+      <div class="ladder-title">Contact</div>
+      <div class="contact-box">
+        <p class="contact-lead">Questions or objections to the above? Write them &mdash; the button opens
+          <strong>your own mail client</strong> with the message composed. This page sends and stores
+          nothing.</p>
+        <label class="contact-label" for="c-subj">Subject</label>
+        <input class="contact-input" id="c-subj" type="text" value="MetaSpace.Bio &mdash; causal containment" />
+        <label class="contact-label" for="c-msg">Message</label>
+        <textarea class="contact-input" id="c-msg" rows="5" placeholder="Your question or objection..."></textarea>
+        <button class="fire-btn" onclick="openMail()">Open in my mail client</button>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <div>&copy; <span id="c-year"></span> <strong>MetaSpace.Bio Logic Engine project</strong> &middot;
+        <a href="#contact" style="color:var(--accent-cyan);text-decoration:none">Contact</a></div>
+      <div class="footer-note">The measurements on this page were made on a single test machine, dated and
+        with reproducible scripts. They do not describe a production deployment.<br>
+        The measurement scripts, the protocols and the claim ledger are publicly auditable:
+        <a href="https://github.com/LemonScripter/metaspace-dcc-evidence" style="color:var(--accent-cyan);text-decoration:none">evidence package</a>.</div>
+    </footer>
+  </div>
+
+<script>
+    let currentMode = 'edr';
+
+    function setSimMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`.mode-btn[data-mode="${mode}"]`).classList.add('active');
+      
+      const consoleEl = document.getElementById('console');
+      consoleEl.innerHTML = `<div class="terminal-line info">[RENDSZER] Mód átváltva: ${mode === 'edr' ? 'Conventional EDR / signature-based (illustration)' : 'DCC Ring 0 - replay of real kernel verdicts (2026-08-07)'}</div>`;
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.textContent.toLowerCase().includes(tabId.substring(0,3)));
+      if (activeBtn) activeBtn.classList.add('active');
+      
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function writeLog(text, type = 'info') {
+      const consoleEl = document.getElementById('console');
+      const line = document.createElement('div');
+      line.className = `terminal-line ${type}`;
+      line.textContent = text;
+      consoleEl.appendChild(line);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    async function runSimulation() {
+      const consoleEl = document.getElementById('console');
+      consoleEl.innerHTML = '';
+      
+      await writeLog('[RUN] Hybrid SolarWinds / CrowdStrike supply-chain scenario started...', 'info');
+      await delay(1000);
+      
+      await writeLog('Loading: SolarWinds.Orion.Core.dll (version 2026.4.1.3)', 'info');
+      await writeLog('[INFO] Code validly signed: "SolarWinds Worldwide, LLC" [VALID]', 'success');
+      await delay(1000);
+
+      await writeLog('Executing: background thread started (ordinary API calls)...', 'info');
+      await delay(800);
+
+      if (currentMode === 'edr') {
+        await writeLog('[EDR] Syscall check: SolarWinds process allowed to run (trusted signature).', 'success');
+        await delay(1000);
+        
+        await writeLog('SolarWinds -> Opening connection: https://malicious-exfil.com:443/api/v1/collect', 'cmd');
+        await delay(1200);
+        
+        await writeLog('[EDR] Connection allowed (ordinary HTTPS / port 443, no known-bad IP pattern in the database).', 'success');
+        await delay(800);
+        
+        await writeLog('SolarWinds -> Data sent successfully: SSH keys and tokens exfiltrated.', 'warn');
+        await delay(1000);
+        
+        await writeLog('[!] ATTACK SUCCEEDED. The update evaded EDR because it behaved legally, with bad intent.', 'error');
+      } else {
+        // VALODI, MERT SOROK — 2026-08-07, dcc-proof2, blokkolo mod.
+        // A korabbi valtozat kitalalt narracio volt, es olyan mechanizmusra
+        // hivatkozott (hardver-IRQ mint kauzalis gyoker), ami egyetlen mert
+        // kernelen sem mukodott: az input_event tracepoint nem letezik.
+        await writeLog('[MEASURED] dcc-proof2 - Debian 12 - kernel 6.1.0-52-amd64 - CONFIG_BPF_LSM=y', 'info');
+        await writeLog('[MEASURED] enforcement verified in the run output: config_map log_only=0', 'info');
+        await writeLog('[MEASURED] probe process comm=dccprobe - NOT on the allowlist', 'info');
+        await delay(1200);
+
+        await writeLog('-- A) without a grant ------------------------------', 'info');
+        await writeLog('dccprobe -> write() /tmp/t_write', 'cmd');
+        await delay(900);
+        await writeLog('[06:31:26] CREATE_BLK  [WRIT]  pid=1150  comm=dccprobe', 'error');
+        await writeLog('-> exit=1 (EPERM). The kernel refused.', 'error');
+        await delay(1400);
+
+        await writeLog('-- B) authenticated request ------------------------', 'info');
+        await writeLog('dcc_request -> DCC-Authority: signed intent (HMAC-SHA256, nonce, dt=400ms)', 'cmd');
+        await delay(900);
+        await writeLog('[Authority] SO_PEERCRED: the KERNEL identifies the caller - pid=1158.', 'info');
+        await writeLog('            The grant is issued to THAT process, not to whoever the request names.', 'info');
+        await delay(900);
+        await writeLog('[OK] GRANT pid=1158 uid=1001 zone=1 op_class=0', 'success');
+        await writeLog('dccprobe -> write() 300 ms later', 'cmd');
+        await delay(900);
+        await writeLog('-> exit=0. THE WRITE WENT THROUGH; file contents written.', 'success');
+        await delay(1400);
+
+        await writeLog('-- C) the same, 800 ms later -----------------------', 'info');
+        await writeLog('[06:31:27] EXPIRED  [WRIT]  pid=1173  comm=dccprobe', 'error');
+        await writeLog('-> exit=1 (EPERM). The grant EXISTED but was outside the window.', 'error');
+        await writeLog('   The verdict is EXPIRED, not NO_TOKEN - the time window is what denied it.', 'warn');
+        await delay(1400);
+
+        await writeLog('-- D) forged request -------------------------------', 'info');
+        await writeLog('dcc_request --spoof-tid   (asks in another process's name)', 'cmd');
+        await delay(900);
+        await writeLog('[--] REJECTED: the requested tid is not the caller's pid', 'error');
+        await writeLog('-> exit=2. The write never happened.', 'error');
+        await delay(1200);
+
+        await writeLog('[RESULT] BOTH directions of the decision measured: denied without a grant,', 'success');
+        await writeLog('           permitted with a valid grant, denied again once expired.', 'success');
+        await writeLog('[LIMIT] A single disposable VM, locally built. DEPLOYED NOWHERE -', 'warn');
+        await writeLog('         the Tokyo installation runs the older build.', 'warn');
+      }
+    }
+
+    document.getElementById('c-year').textContent = new Date().getFullYear();
+
+    function openMail() {
+      const subj = document.getElementById('c-subj').value || 'MetaSpace.Bio';
+      const msg  = document.getElementById('c-msg').value || '';
+      window.location.href = 'mailto:admin@metaspace.bio'
+        + '?subject=' + encodeURIComponent(subj)
+        + '&body='    + encodeURIComponent(msg);
+    }
+  </script>
+</body>
+</html>

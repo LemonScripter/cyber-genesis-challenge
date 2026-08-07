@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MetaSpace — kazuális cáfolat és szimulátor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0B0F10;
+      --card-bg: #111618;
+      --card-border: #1E2528;
+      --text: #E3E9EA;
+      --text-muted: #8E9D9F;
+      
+      --accent-cyan: #3FB3BC;
+      --accent-cyan-glow: rgba(63, 179, 188, 0.15);
+      --accent-gold: #D69A52;
+      --accent-red: #D4696C;
+      --accent-red-glow: rgba(212, 105, 108, 0.15);
+      --accent-green: #52D68C;
+      --accent-green-glow: rgba(82, 214, 140, 0.15);
+      
+      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      --font-serif: 'Playfair Display', Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding: 2rem 1.5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 68rem;
+      margin: 0 auto;
+    }
+
+    /* --- HEADER --- */
+    header {
+      margin-bottom: 3.5rem;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -1.5rem;
+      left: 0;
+      width: 6rem;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-cyan), transparent);
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent-cyan);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.8rem;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 44rem;
+      font-weight: 300;
+    }
+
+    /* --- THE CORE QUESTION BOX --- */
+    .objection-quote {
+      background: linear-gradient(135deg, #151011, #131215);
+      border-left: 3px solid var(--accent-red);
+      padding: 1.5rem 2rem;
+      border-radius: 0 8px 8px 0;
+      margin: 2.5rem 0;
+    }
+
+    .objection-quote p {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: #F4D5D6;
+    }
+
+    .objection-quote span {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent-red);
+      margin-top: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* --- GRID LAYOUT FOR SECTIONS --- */
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2.5rem;
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* --- TABS SYSTEM --- */
+    .tabs-container {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .tab-header {
+      display: flex;
+      border-bottom: 1px solid var(--card-border);
+      background-color: rgba(0,0,0,0.2);
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 1.2rem 1rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-align: center;
+      position: relative;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background-color: rgba(255,255,255,0.02);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-cyan);
+      background-color: rgba(63, 179, 188, 0.03);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    .tab-content {
+      padding: 2rem;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-content h3 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .tab-content p {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .key-points {
+      margin: 1.5rem 0;
+      padding-left: 1.2rem;
+    }
+
+    .key-points li {
+      margin-bottom: 0.8rem;
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    .key-points li strong {
+      color: var(--accent-cyan);
+    }
+
+    /* --- INTERACTIVE SIMULATOR --- */
+    .simulator-container {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .sim-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .sim-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.3rem;
+    }
+
+    .sim-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Mode selector */
+    .mode-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .mode-btn {
+      background-color: #161D20;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .mode-btn:hover {
+      border-color: var(--text-muted);
+      color: var(--text);
+    }
+
+    .mode-btn.active[data-mode="edr"] {
+      background-color: var(--accent-red-glow);
+      border-color: var(--accent-red);
+      color: #FFB3B5;
+    }
+
+    .mode-btn.active[data-mode="membrane"] {
+      background-color: var(--accent-cyan-glow);
+      border-color: var(--accent-cyan);
+      color: #B3F4FF;
+    }
+
+    /* Terminal console mockup */
+    .terminal {
+      background-color: #050708;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      padding: 1.2rem;
+      flex-grow: 1;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    }
+
+    .terminal-line {
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .terminal-line.cmd {
+      color: #9EC0E5;
+    }
+    .terminal-line.cmd::before {
+      content: '$ ';
+      color: var(--accent-cyan);
+    }
+
+    .terminal-line.info {
+      color: var(--text-muted);
+    }
+
+    .terminal-line.success {
+      color: var(--accent-green);
+    }
+
+    .terminal-line.error {
+      color: var(--accent-red);
+      font-weight: 500;
+    }
+
+    .terminal-line.warn {
+      color: var(--accent-gold);
+    }
+
+    /* Simulation Trigger Button */
+    .fire-btn {
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, #1B7882, #0D6E77);
+      border: none;
+      color: white;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(13, 110, 119, 0.3);
+    }
+
+    .fire-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(13, 110, 119, 0.4);
+    }
+
+    .fire-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* --- LADDER FOOTER --- */
+    .ladder-section {
+      margin-top: 4rem;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 2.5rem;
+    }
+
+    .ladder-title {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .ladder {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .ladder {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ladder-step {
+      background-color: rgba(255,255,255,0.01);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .ladder-step:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      line-height: 1;
+      margin-bottom: 0.8rem;
+    }
+
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Badge styles */
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .badge.hard {
+      background-color: var(--accent-cyan-glow);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(63, 179, 188, 0.3);
+    }
+
+    .badge.soft {
+      background-color: rgba(214, 154, 82, 0.15);
+      color: var(--accent-gold);
+      border: 1px solid rgba(214, 154, 82, 0.3);
+    }
+
+    .badge.plat {
+      background-color: rgba(142, 157, 159, 0.12);
+      color: var(--text-muted);
+      border: 1px solid rgba(142, 157, 159, 0.25);
+      margin-left: 0.4rem;
+    }
+
+    /* --- SCOPE / CAVEAT --- */
+    .caveat {
+      margin: 1.25rem 0 0.25rem;
+      padding: 0.95rem 1.15rem;
+      background-color: rgba(214, 154, 82, 0.06);
+      border-left: 2px solid var(--accent-gold);
+      border-radius: 0 6px 6px 0;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .caveat-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: 0.4rem;
+    }
+
+    .caveat strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .caveat code,
+    .key-points code,
+    .tab-content p code,
+    .step-desc code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      color: var(--accent-cyan);
+    }
+
+    .scope-note {
+      margin: 0 0 2.5rem;
+      background-color: rgba(63, 179, 188, 0.05);
+      border-left-color: var(--accent-cyan);
+    }
+
+    .scope-note .caveat-label {
+      color: var(--accent-cyan);
+    }
+
+    .scope-note ul {
+      margin: 0.6rem 0 0;
+      padding-left: 1.1rem;
+    }
+
+    .scope-note li {
+      margin-bottom: 0.35rem;
+    }
+
+    /* --- KAPCSOLAT + LABLEC --- */
+    .contact-box { max-width: 42rem; }
+    .contact-lead { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.2rem; }
+    .contact-label {
+      display: block; font-family: var(--font-mono); font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--accent-cyan); margin: 0.9rem 0 0.35rem;
+    }
+    .contact-input {
+      width: 100%; background-color: #0B1013; color: var(--text);
+      border: 1px solid var(--card-border); border-radius: 6px;
+      padding: 0.7rem 0.9rem; font-family: var(--font-sans); font-size: 0.92rem;
+      resize: vertical;
+    }
+    .contact-input:focus { outline: none; border-color: var(--accent-cyan); }
+    .contact-box .fire-btn { margin-top: 1.2rem; }
+    .site-footer {
+      margin-top: 4rem; padding-top: 1.5rem;
+      border-top: 1px solid var(--card-border);
+      font-size: 0.85rem; color: var(--text-muted);
+    }
+    .site-footer strong { color: var(--text); font-weight: 500; }
+    .footer-note { margin-top: 0.5rem; font-size: 0.8rem; }
+
+    .lang-switch {
+      position: absolute; top: 0; right: 0;
+      font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em;
+    }
+    .lang-switch a {
+      color: var(--text-muted); text-decoration: none; padding: 0.3rem 0.55rem;
+      border: 1px solid var(--card-border); border-radius: 4px; margin-left: 0.3rem;
+    }
+    .lang-switch a.on { color: var(--accent-cyan); border-color: var(--accent-cyan); }
+  </style>
+</head>
+<body>
+
+  <div class="wrap container">
+    <div class="lang-switch">
+      <a href="index.html" class="on">HU</a><a href="en.html" class="">EN</a>
+    </div>
+    <header>
+      <div class="eyebrow">MetaSpace.Bio tudásbázis · Kazuális védelmi tanulmány</div>
+      <h1>Mit tehet a bezárt fél?</h1>
+      <p class="subtitle">Anatómiai és kazuális cáfolat a SolarWinds, a CrowdStrike és a futásidejű formális verifikáció korlátairól.</p>
+    </header>
+
+    <div class="objection-quote">
+      <p>„...A SolarWinds-frissítés érvényesen alá volt írva, és a hátsó ajtó szabályos API-hívásokat végzett szabályos jogosultságokkal. Egy kernel-szintű felügyelet ebből mit látna? Logikailag helyes, a működési modellbe illeszkedő utasításokat. A problémát nem az utasítások helyessége jelenti, hanem a szándék, azt pedig futásidőben nem lehet matematikailag verifikálni...”</p>
+      <span>— Egy megalapozott iparági kétség hangja</span>
+    </div>
+
+    <div class="caveat scope-note">
+      <span class="caveat-label">Hogyan olvasd — melyik fok, melyik platformon</span>
+      Az alábbi kazuális érvelés a <strong>DCC Ring 0-ra</strong> vonatkozik: eBPF LSM hookok, amelyek a
+      kernelben futnak. Ez a fok <strong>Linuxot igényel</strong> (<code>CONFIG_BPF_LSM=y</code>, BTF, saját
+      kernel — konténerben nem megy). Ahol ez nincs meg, ott a hordozható, szoftveres fokok védenek,
+      gyengébb garanciával. A különbséget végig jelöljük:
+      <ul>
+        <li><strong>Level 1 · WASM/WASI</strong> — platformfüggetlen, de csak WASM-ra fordított vendégkódra. A tiltás konstrukció (link error).</li>
+        <li><strong>Level 2 · Ring 0 (eBPF LSM)</strong> — <strong>Linux</strong>, kernel ≥ 6.1. Írás, olvasás, <code>exec</code> és <strong>hálózat</strong> egyaránt kernel-hookon dől el, és <code>fork</code>-on öröklődik. <strong>Alapértelmezett indulás: LOG-ONLY</strong>; a blokkoló mód szándékos, külön kapcsolt lépés.</li>
+        <li><strong>Level 3 · Hook / interpreter</strong> — Windows, macOS, Linux. Ahol nincs kernel-fok (pl. fejlesztői munkaállomás), ott eszközhívás-mediáció és nyelvi fojtópont véd: <strong>felismerés-alapú, soft containment</strong>.</li>
+      </ul>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT COLUMN: THEORETICAL ARGUMENTS (TABS) -->
+      <div class="tabs-container">
+        <div class="tab-header">
+          <button class="tab-btn active" onclick="switchTab('solarwinds')">SolarWinds</button>
+          <button class="tab-btn" onclick="switchTab('crowdstrike')">CrowdStrike</button>
+          <button class="tab-btn" onclick="switchTab('sel4')">Formal Proof</button>
+          <button class="tab-btn" onclick="switchTab('patch')">Patch-kockázat</button>
+        </div>
+
+        <!-- TAB 1: SOLARWINDS -->
+        <div id="solarwinds" class="tab-content active">
+          <h3>Szándék (intent) vs. érintés (touch)</h3>
+          <p>A kritika tökéletesen mutat rá a hagyományos EDR és vírusirtó rendszerek elvi korlátjára: a <strong>szándék</strong> (kártékony szándék) futásidőben, Turing-teljes kódnál matematikailag valóban eldönthetetlen feladat.</p>
+          <p>A MetaSpace.Bio azonban <strong>szakít a szándékvizsgálat dogmájával</strong>. Nem az a kérdés, hogy a SolarWinds mit akar csinálni, hanem az, hogy mit <strong>érint meg</strong>.</p>
+          <ul class="key-points">
+            <li><strong>Nem az utasítást nézzük:</strong> A védelem nem azt bírálja el, hogy az utasítás „helyes-e”, hanem azt, hogy a megérinteni kívánt erőforrás (fájl vagy hálózati cél) része-e a <code>.bio</code>-ban deklarált állapottérnek. Ez a kérdés — a szándékkal ellentétben — eldönthető.</li>
+            <li><strong>A fojtópont a kauzális láncnál van <span class="badge plat">Linux · Ring 0</span>:</strong> A védett hatás előfeltétele egy <strong>érvényes, időablakos cédula</strong>. A program nem tudja magának kiállítani: a <code>token_map</code> <strong>fagyasztott</strong> — user-space, root sem írhatja. Egy magától elinduló folyamatnak nincs cédulája, tehát nem ír. <strong>Mérve 2026-08-07-én, blokkoló módban:</strong> cédula nélkül <code>EPERM</code> · érvényes cédulával az írás átmegy · lejárttal <code>EXPIRED</code>. <em>Az eredeti terv fizikai billentyűleütést használt gyökérnek; mérve az a tracepoint a modern kernelen nem létezik, ezért a gyökér hitelesített kérés lett.</em></li>
+            <li><strong>Az egress ugyanezen a kapun megy <span class="badge plat">Linux · Ring 0</span>:</strong> A <code>socket_connect</code> <strong>és</strong> a <code>socket_sendmsg</code> hook ugyanabból a láncból bírálja el a kimenő forgalmat. A <code>sendmsg</code> bekötése azért kellett, mert mérve a <code>sendto()</code> — kapcsolat nélküli UDP, például DNS-alapú kiszivárogtatás — <strong>a bekapcsolt hálózati őr mellett is kisétált</strong>. ⚠️ A hálózati őr alapértelmezésben <strong>kikapcsolt</strong>.</li>
+            <li><strong>A megkerülhetetlen öröklődés <span class="badge plat">Linux · Ring 0</span>:</strong> Ha a frissítés alfolyamatot indít (<code>sh</code>, <code>python</code>), a <code>dcc_fork_inherit</code> a kauzális állapotot átörökíti. Az LSM hook a kernelben kötelező — <strong>Ring 3-ból megkerülhetetlen</strong>.</li><li><strong>A törlés és az átnevezés is állapotváltozás <span class="badge plat">Linux · Ring 0</span>:</strong> Mérve: a <code>file_permission</code> hook 13 hétköznapi fájlműveletből <strong>kettőt</strong> látott — a <code>unlink</code>, a <code>rename</code>, a <code>truncate</code> és az <code>mmap</code>-írás mellette ment el. Egy <strong>átnevezéssel titkosító ransomware tehát nem találkozott a védelemmel</strong>. 11 további hook bekötve; az arány most <strong>16/17</strong>.</li>
+          </ul>
+          <div class="caveat">
+            <span class="caveat-label">A kényszerítés bekapcsolt állapota szándékos lépés</span>
+            Minden eBPF program <strong>LOG-ONLY módban indul</strong> (<code>dcc_core.bpf.c</code>: a blocking
+            toggle alapértéke 0), és a blokkoló mód csak a bot-interferencia teszt (T6) után kapcsolható be —
+            plusz van vészkijárat-map, ha a szolgáltatás blokkolási hurokba kerülne. Ez tudatos üzembehelyezési
+            fegyelem (előbb megfigyelés, aztán tiltás), de azt jelenti, hogy <strong>„a kernel megtagadja”
+            a blokkoló módra igaz</strong>, nem az alapállapotra.
+          </div>
+        </div>
+
+        <!-- TAB 2: CROWDSTRIKE -->
+        <div id="crowdstrike" class="tab-content">
+          <h3>Ki verifikálja a verifikálót?</h3>
+          <p>A CrowdStrike-katasztrófa tökéletes példája annak, amikor egy Ring 0-ban futó, zárt forráskódú, proprietary, harmadik féltől származó kernel driver instabilitást vagy ellátási láncbeli sérülékenységet hoz be a rendszerbe.</p>
+          <p>A MetaSpace.Bio struktúrája a <strong>Ring 0-ból eredő</strong> kockázatot strukturálisan kiküszöböli — a „ki verifikálja a verifikálót?” kérdés második felére viszont csak részben felel ma:</p>
+          <ul class="key-points">
+            <li><strong>Nincs saját kernel driver <span class="badge plat">Linux · Ring 0</span>:</strong> A DCC nem tölt be harmadik féltől származó modult. eBPF programként fut, amit a <strong>kernel saját verifikátora</strong> statikusan ellenőriz betöltés előtt: korlátos ciklusok, nincs szabad pointer-aritmetika. <strong>Kernel pánikot okozni nem tud</strong> — pontosan az a hibaosztály zárul ki, amitől a CrowdStrike-leállás lett.</li>
+            <li><strong>User-Space izoláció <span class="badge plat">Level 1</span>:</strong> A WASM/WASI végrehajtási mód tisztán user-space-ben fut, nulla Ring 0 hozzáféréssel. Egy WASM-futtatókörnyezet hibája legfeljebb a saját folyamatát állítja meg, de képtelen az operációs rendszert kékhalálba vinni.</li>
+            <li><strong>Privilégium-szeparált hatóság <span class="badge plat">Linux · Ring 0</span>:</strong> A cédulát nem az alkalmazás mintázza. A <code>token_map</code> <strong>fagyasztott</strong> (<code>bpf_map_freeze</code>): user-space, root sem írhatja közvetlenül — a kiállítás <strong>a kernelben</strong> történik, és csak <code>CAP_BPF</code> jogosultsággal indítható. Az alkalmazás egy unix socketen <em>kérhet</em>, aláírt kéréssel; a hatóság a kérésben szereplő azonosítót nem hiszi el, hanem <strong>a kerneltől kérdezi meg, ki a hívó</strong> (<code>SO_PEERCRED</code>). Mérve: rontott aláírás · újraküldött kérés · más nevében kérés · túl hosszú ablak — mind elutasítva.</li>
+          </ul>
+          <div class="caveat">
+            <span class="caveat-label">Ameddig a „ki verifikálja a verifikálót?” válasza tart</span>
+            A fenti zárás a <strong>jogosultság nélküli támadóra</strong> áll — ott erős, és ez a valós
+            SolarWinds/ransomware-osztály. Amit <strong>nem</strong> állítunk: hogy egy <strong>már root-jogú</strong>
+            fél ellen is tart. A <code>bpftool prog detach</code> / <code>unload</code> szándékos rollback-út,
+            azaz root kézzel hatálytalaníthatja a védelmet — ezért a bizalmi gyökér a root-hozzáférés
+            őrzése marad. Két erre irányuló támadási teszt <strong>tudatosan halasztott</strong> és még nem futott:
+            <strong>T19</strong> (user namespace + <code>CAP_BPF</code> → BPF-map tamper) és <strong>T20</strong>
+            (verifier-megkerülés BTF type confusionnal). Nyitott továbbá, hogy a <code>comm</code>-alapú whitelist
+            <code>prctl(PR_SET_NAME)</code>-mel hamisítható — inode-alapú kellene helyette.
+          </div>
+        </div>
+
+        <!-- TAB 3: FORMAL PROOF -->
+        <div id="sel4" class="tab-content">
+          <h3>A verifikáció amortizációja (verification amortization)</h3>
+          <p>A seL4 mikrokernel 10 ezer sorának bizonyítása valóban évtizedes munka volt, mert a teljes Turing-teljes kód helyességét próbálták igazolni. A MetaSpace.Bio <strong>nem tetszőleges harmadik féltől származó kódot verifikál futásidőben</strong>.</p>
+          <p>A technológia magja a <strong>verifikáció amortizációja</strong>:</p>
+          <ul class="key-points">
+            <li><strong>Turing-hiányos alkotmány (.bio):</strong> A védelmi szabályokat deklaráló <code>.bio</code> nyelv szándékosan Turing-incomplete (nem tartalmazhat ciklusokat vagy rekurziót). Az állapottér így véges és tökéletesen bejárható.</li>
+            <li><strong>Z3 SMT Solver:</strong> Az alkotmány helyességét és ellentmondás-mentességét offline, a futás előtt bizonyítja be a Z3 solver (kb. 30 milliszekundum alatt).</li>
+            <li><strong>O(1) futásidejű értékelés:</strong> A futásidőben a kernelnek nem kell matematikát bizonyítania. Csak egy előre lefordított, statikus ruleset-et (címlistát) hasonlít össze a hívás paramétereivel. Ez a drága verifikációs költséget leviszi 30 mikroszekundumra.</li>
+          </ul>
+        </div>
+
+        <!-- TAB 4: PATCH RISK -->
+        <div id="patch" class="tab-content">
+          <h3>Frissíthetőség vs. kerítés</h3>
+          <p>Az a rendszer, amit nem lehet gyorsan patchelni, sérülékenység esetén védtelen marad. A „csak fizikai hozzáféréssel frissíthető” elv valóban működési kockázat lenne a szoftverkód szintjén. Ezért a MetaSpace.Bio különválasztja a <strong>szoftverkódot</strong> és a <strong>biztonsági kerítést (.bio)</strong>.</p>
+          <ul class="key-points">
+            <li><strong>Automatikus kódfrissítés:</strong> A SolarWinds vagy tetszőleges program kódja naponta frissülhet automatikusan távolról, akár útközben is.</li>
+            <li><strong>Sérthetetlen biztonsági kerítés:</strong> Mivel a membrán-határ (.bio) statikus és különálló, a távolról érkező új verzió hiába hoz be egy vadonatúj zero-day sebezhetőséget, a meglévő kerítésen belül marad.</li>
+            <li><strong>Fizikai bizalmi gyökér (root of trust):</strong> Csak a biztonsági profil (.bio) megváltoztatásához vagy kikapcsolásához szükséges a magasabb szintű (akár lokális/fizikai) jóváhagyás, így a távoli fél a <strong>kerítést</strong> nem tudja lebontani, miközben a legitim patcheket szabadon engedjük futni.</li>
+          </ul>
+          <div class="caveat">
+            <span class="caveat-label">A kerítés bizalmi gyökere a root-hozzáférés</span>
+            A kerítés attól sérthetetlen, hogy a megváltoztatásához <strong>más privilégium kell</strong>, mint
+            a védett program futtatásához: a szabályok betöltése <code>CAP_BPF</code>/root, a program maga
+            Ring 3. Egy távoli támadó tehát a <strong>kerítést</strong> nem tudja lebontani — <strong>hacsak nem
+            szerez rootot</strong>. A DCC ezt a különbséget élesíti, nem szünteti meg: a root-hozzáférés őrzése
+            (és a Level 3-as fokon a csomagkezelő-csatorna) továbbra is a védelem előfeltétele, nem a
+            következménye.
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: INTERACTIVE SIMULATOR -->
+      <div class="simulator-container">
+        <div class="sim-header">
+          <div class="sim-title">Mért lefolyás — nem szimuláció</div>
+          <div class="sim-desc">A DCC-ág <strong>valódi, 2026-08-07-én rögzített kernel-verdikteket</strong> játszik vissza (`dcc-proof2`, Debian 12, kernel 6.1.0-52-amd64, blokkoló mód). Az EDR-ág illusztráció, összehasonlításnak.</div>
+        </div>
+
+        <div class="mode-selector">
+          <button class="mode-btn active" data-mode="edr" onclick="setSimMode('edr')">Hagyományos EDR</button>
+          <button class="mode-btn" data-mode="membrane" onclick="setSimMode('membrane')">DCC Ring 0 · mért</button>
+        </div>
+
+        <div class="terminal" id="console">
+          <div class="terminal-line info">[RENDSZER] Konzol inicializálva. Válassz védelmi módot és indítsd el a szimulációt.</div>
+        </div>
+
+        <button class="fire-btn" onclick="runSimulation()">Mért lefolyás lejátszása</button>
+
+        <div class="caveat">
+          <span class="caveat-label">Mit mutat ez, és mit nem</span>
+          A DCC-ág <strong>valódi kernel-verdikteket</strong> játszik vissza egy
+          2026-08-07-i mérésből: éles blokkoló mód, nem whitelistelt próbafolyamat,
+          a döntés <strong>mindkét iránya</strong> (engedély nélkül tilos · érvényes
+          engedéllyel szabad · lejárttal újra tilos).
+          <strong>Amit nem mutat:</strong> üzemi állapotot. A mérés egyetlen eldobható
+          gépen, helyben fordított változattal készült; <strong>üzembe sehol nincs
+          helyezve</strong>, a tokiói telepítés a régi változatot futtatja, kikapcsolt
+          hálózati őrrel. A korábbi <em>„hardver-IRQ mint kauzális gyökér"</em> narráció
+          törölve: az a tracepoint egyetlen mért kernelen sem létezett.
+        </div>
+      </div>
+    </div>
+
+    <!-- LADDER LADDER -->
+    <section class="ladder-section">
+      <div class="ladder-title">A háromfokú membránlétra</div>
+      <div class="ladder">
+        <div class="ladder-step">
+          <span class="badge hard">Level 1 · WASM</span><span class="badge plat">platformfüggetlen</span>
+          <div class="step-num">1</div>
+          <div class="step-title">Ki sem tudja mondani</div>
+          <div class="step-desc">A vendég kódnak nulla ambient joga van. A tiltás nem döntés, hanem a szótár hiánya (link-time isolation). Ára: a kódot WASM-ra kell fordítani.</div>
+        </div>
+
+        <div class="ladder-step">
+          <span class="badge hard">Level 2 · Ring 0</span><span class="badge plat">csak Linux</span>
+          <div class="step-num">2</div>
+          <div class="step-title">Nem hajtódik végre</div>
+          <div class="step-desc">eBPF LSM hookok a kernelben (≥ 6.1, <code>CONFIG_BPF_LSM=y</code>): írás, olvasás, <code>exec</code>, hálózat — érvényes kauzális token nélkül <code>-EPERM</code>. Ring 3-ból megkerülhetetlen, <code>fork</code>-on öröklődik.</div>
+        </div>
+
+        <div class="ladder-step">
+          <span class="badge soft">Level 3 · Hook</span><span class="badge plat">Win · macOS · Linux</span>
+          <div class="step-num">3</div>
+          <div class="step-title">Felismerési fojtópont</div>
+          <div class="step-desc">Eszközhívások és nyelvi fojtópontok (<code>socket</code>, <code>Popen</code>) szintje. Rugalmas és mindenhol fut, de amit nem ismer fel, azt átengedi (soft containment). <strong>Windowson ma ez az egyetlen elérhető fok.</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KAPCSOLAT + LABLEC -->
+    <section class="ladder-section" id="kapcsolat">
+      <div class="ladder-title">Kapcsolat</div>
+      <div class="contact-box">
+        <p class="contact-lead">Kérdésed vagy ellenvetésed van a fentiekhez? Írd meg — a gomb a
+          <strong>saját levelezőprogramodat</strong> nyitja meg a megírt üzenettel. Ez az oldal
+          semmit nem küld el és nem tárol.</p>
+        <label class="contact-label" for="c-subj">Tárgy</label>
+        <input class="contact-input" id="c-subj" type="text" value="MetaSpace.Bio — kazuális védelem" />
+        <label class="contact-label" for="c-msg">Üzenet</label>
+        <textarea class="contact-input" id="c-msg" rows="5" placeholder="Írd ide a kérdésed vagy az ellenvetésed…"></textarea>
+        <button class="fire-btn" onclick="openMail()">Megnyitás a levelezőprogramban</button>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <div>© <span id="c-year"></span> <strong>MetaSpace.Bio Logic Engine projekt</strong> ·
+        <a href="#kapcsolat" style="color:var(--accent-cyan);text-decoration:none">Kapcsolat</a></div>
+      <div class="footer-note">A lapon szereplő mérések egyetlen tesztgépen készültek, dátumozva és
+        reprodukálható scriptekkel. Üzemi telepítést nem írnak le.<br>
+        A mérőscriptek, a jegyzőkönyvek és az állítás-ledger nyilvánosan ellenőrizhetők:
+        <a href="https://github.com/LemonScripter/metaspace-dcc-evidence" style="color:var(--accent-cyan);text-decoration:none">bizonyíték-csomag</a>.</div>
+    </footer>
+  </div>
+
+  <script>
+    let currentMode = 'edr';
+
+    function setSimMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`.mode-btn[data-mode="${mode}"]`).classList.add('active');
+      
+      const consoleEl = document.getElementById('console');
+      consoleEl.innerHTML = `<div class="terminal-line info">[RENDSZER] Mód átváltva: ${mode === 'edr' ? 'Hagyományos EDR / Aláírás-alapú (illusztráció)' : 'DCC Ring 0 — valódi kernel-verdiktek visszajátszása (2026-08-07)'}</div>`;
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.textContent.toLowerCase().includes(tabId.substring(0,3)));
+      if (activeBtn) activeBtn.classList.add('active');
+      
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function writeLog(text, type = 'info') {
+      const consoleEl = document.getElementById('console');
+      const line = document.createElement('div');
+      line.className = `terminal-line ${type}`;
+      line.textContent = text;
+      consoleEl.appendChild(line);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    async function runSimulation() {
+      const consoleEl = document.getElementById('console');
+      consoleEl.innerHTML = '';
+      
+      await writeLog('[SIM] SolarWinds és CrowdStrike hibrid ellátási lánc támadás szimulációja indítva...', 'info');
+      await delay(1000);
+      
+      await writeLog('Betöltés: SolarWinds.Orion.Core.dll (Verzió: 2026.4.1.3)', 'info');
+      await writeLog('[INFO] Kód érvényesen aláírva: "SolarWinds Worldwide, LLC" [ÉRVÉNYES]', 'success');
+      await delay(1000);
+
+      await writeLog('Végrehajtás: Háttér szál indítása (szabályos API hívásokkal)...', 'info');
+      await delay(800);
+
+      if (currentMode === 'edr') {
+        await writeLog('[EDR] Rendszerhívás ellenőrzése: SolarWinds folyamat futása engedélyezett (Megbízható aláírás).', 'success');
+        await delay(1000);
+        
+        await writeLog('SolarWinds -> Kapcsolat kezdeményezése: https://malicious-exfil.com:443/api/v1/collect', 'cmd');
+        await delay(1200);
+        
+        await writeLog('[EDR] Hálózati kapcsolat engedélyezve (szabályos HTTPS / 443 port, nincs ismert rosszindulatú IP minta az adatbázisban).', 'success');
+        await delay(800);
+        
+        await writeLog('SolarWinds -> Adatok küldése sikeres: SSH kulcsok, tokenek exfiltrálva.', 'warn');
+        await delay(1000);
+        
+        await writeLog('[!] TÁMADÁS SIKERES. A SolarWinds frissítés kikerülte az EDR-t, mert legálisan viselkedett, de rossz szándékkal.', 'error');
+      } else {
+        // VALODI, MERT SOROK — 2026-08-07, dcc-proof2, blokkolo mod.
+        // A korabbi valtozat kitalalt narracio volt, es olyan mechanizmusra
+        // hivatkozott (hardver-IRQ mint kauzalis gyoker), ami egyetlen mert
+        // kernelen sem mukodott: az input_event tracepoint nem letezik.
+        await writeLog('[MERES] dcc-proof2 · Debian 12 · kernel 6.1.0-52-amd64 · CONFIG_BPF_LSM=y', 'info');
+        await writeLog('[MERES] kenyszerites igazolva a futas kimeneteben: config_map log_only=0', 'info');
+        await writeLog('[MERES] a probafolyamat comm=dccprobe — NINCS a whitelisten', 'info');
+        await delay(1200);
+
+        await writeLog('── A) engedely nelkul ──────────────────────────────', 'info');
+        await writeLog('dccprobe -> write() /tmp/t_write', 'cmd');
+        await delay(900);
+        await writeLog('[06:31:26] CREATE_BLK  [WRIT]  pid=1150  comm=dccprobe', 'error');
+        await writeLog('-> exit=1 (EPERM). A kernel megtagadta.', 'error');
+        await delay(1400);
+
+        await writeLog('── B) hitelesitett keres ───────────────────────────', 'info');
+        await writeLog('dcc_request -> DCC-Authority: alairt intent (HMAC-SHA256, nonce, Δt=400ms)', 'cmd');
+        await delay(900);
+        await writeLog('[Authority] SO_PEERCRED: a hivot a KERNEL azonositja — pid=1158.', 'info');
+        await writeLog('            A cedula ENNEK szol, nem annak, akit a keres megnevez.', 'info');
+        await delay(900);
+        await writeLog('[OK] CEDULA pid=1158 uid=1001 zone=1 op_class=0', 'success');
+        await writeLog('dccprobe -> write() 300 ms-mal kesobb', 'cmd');
+        await delay(900);
+        await writeLog('-> exit=0. AZ IRAS ATMENT, a fajl tartalma megirva.', 'success');
+        await delay(1400);
+
+        await writeLog('── C) ugyanaz, 800 ms-mal ──────────────────────────', 'info');
+        await writeLog('[06:31:27] EXPIRED  [WRIT]  pid=1173  comm=dccprobe', 'error');
+        await writeLog('-> exit=1 (EPERM). A cedula LETEZETT, de az ablakon kivul volt.', 'error');
+        await writeLog('   A verdikt EXPIRED, nem NO_TOKEN — az idoablak tiltott.', 'warn');
+        await delay(1400);
+
+        await writeLog('── D) hamisitott keres ─────────────────────────────', 'info');
+        await writeLog('dcc_request --spoof-tid   (mas folyamat neveben ker)', 'cmd');
+        await delay(900);
+        await writeLog('[--] ELUTASITVA: a kert tid nem a hivo pid-je', 'error');
+        await writeLog('-> exit=2. Az iras meg sem tortent.', 'error');
+        await delay(1200);
+
+        await writeLog('[EREDMENY] A dontes MINDKET iranya merve: engedely nelkul tilos,', 'success');
+        await writeLog('           ervenyes engedellyel szabad, lejarttal ujra tilos.', 'success');
+        await writeLog('[KORLAT] Egyetlen eldobhato VM, helyben forditott build. UZEMBE SEHOL', 'warn');
+        await writeLog('         NINCS helyezve — a tokioi telepites a regi valtozatot futtatja.', 'warn');
+      }
+    }
+
+    document.getElementById('c-year').textContent = new Date().getFullYear();
+
+    function openMail() {
+      const subj = document.getElementById('c-subj').value || 'MetaSpace.Bio';
+      const msg  = document.getElementById('c-msg').value || '';
+      window.location.href = 'mailto:admin@metaspace.bio'
+        + '?subject=' + encodeURIComponent(subj)
+        + '&body='    + encodeURIComponent(msg);
+    }
+  </script>
+</body>
+</html>
