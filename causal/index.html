@@ -645,8 +645,12 @@
             azaz root kézzel hatálytalaníthatja a védelmet — ezért a bizalmi gyökér a root-hozzáférés
             őrzése marad. Két erre irányuló támadási teszt <strong>tudatosan halasztott</strong> és még nem futott:
             <strong>T19</strong> (user namespace + <code>CAP_BPF</code> → BPF-map tamper) és <strong>T20</strong>
-            (verifier-megkerülés BTF type confusionnal). Nyitott továbbá, hogy a <code>comm</code>-alapú whitelist
-            <code>prctl(PR_SET_NAME)</code>-mel hamisítható — inode-alapú kellene helyette.
+            (verifier-megkerülés BTF type confusionnal). <strong>Lezárva 2026-08-07:</strong> a <code>comm</code>-alapú
+            whitelist <code>prctl(PR_SET_NAME)</code>-mel hamisítható volt; a helyére <strong>inode-alapú
+            azonosítás</strong> került (a futtatható fájl inode+dev párja, amit a kernel az exec pillanatában ír, a
+            folyamat nem tudja felülírni). <strong>Blokkoló módban mérve:</strong> a <code>prctl</code>-spoof
+            <strong>blokkolt</strong>, a valódi bináris átmegy (pozitív kontroll); a kilépéskori takarítás a
+            tgid-újrahasznosításos öröklést is zárja.
           </div>
         </div>
 

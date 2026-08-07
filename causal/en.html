@@ -697,8 +697,11 @@
             disable the defence by hand &mdash; the root of trust remains the protection of root access.
             Two attack tests aimed at this are <strong>deliberately deferred</strong> and have never run:
             user namespace + <code>CAP_BPF</code> map tampering, and verifier bypass via BTF type confusion.
-            It also remains open that the <code>comm</code>-based allowlist can be spoofed with
-            <code>prctl(PR_SET_NAME)</code> &mdash; it should be inode-based instead.
+            <strong>Closed 2026-08-07:</strong> the <code>comm</code>-based allowlist could be spoofed with
+            <code>prctl(PR_SET_NAME)</code>; it was replaced with <strong>inode-based identity</strong> (the
+            executable&rsquo;s inode+dev pair, written by the kernel at exec and not forgeable from the process).
+            <strong>Measured in blocking mode:</strong> the <code>prctl</code> spoof is <strong>blocked</strong>
+            while the genuine binary passes (positive control); exit-time cleanup also closes the tgid-reuse inheritance.
           </div>
         </div>
 
