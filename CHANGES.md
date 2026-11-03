@@ -1,5 +1,6 @@
 # Correction notice (2026-11-03)
 
+<!-- claims:quote: this paragraph quotes the withdrawn wording -->
 The challenge was presented as "The Unhackable Reality", "100% SECURE", "an empirical proof that hacking becomes a mathematical impossibility". A challenge is a way to *test* a claim; it cannot prove one, and the project's own threat model excludes physical HID emulators and rootkits that bypass kernel filters.
 
 ## What was wrong
