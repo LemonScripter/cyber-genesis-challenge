@@ -5,8 +5,8 @@ import { logAttempt, getSecureProof } from './stats_manager.js';
 
 const content = {
     hu: {
-        title: "BioOS v5.2.1: A feltörhetetlen valóság",
-        text: "KIHÍVÁS! Próbáld meg feltörni a rendszert! Ez a sandbox nem csupán egy játék; ez egy empirikus bizonyíték arra, hogy a Digitális Okozatisági Zártsággal a hackelés matematikai képtelenséggé válik. Szándék nélkül nincs végrehajtás.",
+        title: "BioOS v5.2.1: Cyber Genesis kihívás",
+        text: "KIHÍVÁS! Próbáld meg feltörni ezt a sandbox-ot! A vizsgált állítás: a Digitális Okozatisági Zártsággal egy hardveresen igazolt szándék (IRQ) nélküli művelet nem hajtódik végre, a validációs jelentésben leírt fenyegetési modellen belül. Hatókörön kívül: fizikai HID-emulátorok és a kernel-szűrőket megkerülő rootkitek. Ha áttörést találsz, kérjük, jelezd.",
         startBtn: "Belépés a sandbox-ba",
         validationBtn: "Szakmai Validáció",
         appTitle: "Secure_Note v1.0",
@@ -49,15 +49,15 @@ const content = {
         valS3Title: "3. Memóriabiztonság és tranzakcionális integritás",
         valS3Text: "A BioOS atomi tranzakciós modellt alkalmaz. Minden írási művelet először egy elkülönített átmeneti tárolóba kerül, és csak a formális verifikáció sikere után commitolódik. Ez kiküszöböli a Use-After-Free és TOCTOU típusú sebezhetőségeket.",
         valS4Title: "4. Az empirikus bizonyítás módszertana",
-        valS4Text: "A sandbox a BioOS kernel formális operacionális modellje. A logikai modell és a fizikai hardveres végrehajtás közötti izomorf jelleg garantálja, hogy a sandboxban igazolt biztonsági tulajdonságok a CPU-n belüli végrehajtás során is érvényesülnek.",
+        valS4Text: "A sandbox a BioOS kernel formális operacionális modellje. A cél az, hogy a sandboxban vizsgált biztonsági tulajdonságok a hardveres megvalósításban is érvényesüljenek; ezt a sandbox (egy böngészőben futó JavaScript-modell) nem igazolja.",
         valS5Title: "5. Fenyegetettségi modell",
         valS5Text: "Kivédett támadások: Autonóm háttérfolyamatok, in-memory zsarolóprogramok, folyamat-injektálás (Process Hollowing). Hatókörön kívül: Fizikai HID-emulátorok és kernel-szűrőket megkerülő rootkitek.",
         valS6Title: "6. Oldalcsatorna-védelem",
         valS6Text: "A verifikációs folyamat állandó idejű algoritmusokat használ, mesterséges entrópiával (jitter) kiegészítve, megakadályozva az időalapú adatszivárogtatást."
     },
     en: {
-        title: "BioOS v5.2.1: The Unhackable Reality",
-        text: "CHALLENGE! We invite you to try and breach this system. This sandbox is not just a game; it is an empirical proof that with Digital Causal Closure, hacking becomes a mathematical impossibility. If there is no intent, there is no execution.",
+        title: "BioOS v5.2.1: The Cyber Genesis Challenge",
+        text: "CHALLENGE! We invite you to try to breach this sandbox. The claim under test: with Digital Causal Closure, an action without a hardware-validated intent (IRQ) is not executed, within the threat model described in the validation report. Out of scope: physical HID emulators and rootkits that bypass kernel filters. If you find a breach, please report it.",
         startBtn: "ENTER SANDBOX",
         validationBtn: "SCIENTIFIC PROOF",
         appTitle: "Secure_Note v1.0",
@@ -100,7 +100,7 @@ const content = {
         valS3Title: "3. Memory safety and transactional integrity",
         valS3Text: "BioOS employs an atomic transactional model. Every write operation is placed in an isolated staging buffer and committed only after successful formal verification. This eliminates Use-After-Free and TOCTOU vulnerabilities.",
         valS4Title: "4. Empirical proof methodology",
-        valS4Text: "The sandbox serves as a formal operational model of the BioOS kernel. The isomorphic nature between the logical model and physical hardware execution ensures that security properties proven in the sandbox hold true within the CPU.",
+        valS4Text: "The sandbox serves as a formal operational model of the BioOS kernel. The goal is that the properties examined in the sandbox also hold in a hardware implementation; the sandbox (a JavaScript model running in a browser) does not prove this.",
         valS5Title: "5. Threat model and limitations",
         valS5Text: "Mitigated attacks: Autonomous background processes, in-memory ransomware, Process Hollowing. Out of scope: Physical HID emulators and specialized rootkits bypassing kernel filters.",
         valS6Title: "6. Side-channel protection",

@@ -53,8 +53,8 @@ Ebben a modellben nem azt mondjuk meg, mi TILOS, hanem **pontosan leírjuk az ö
 
 ---
 
-## 4. Konklúzió: Miért lesz ez feltörhetetlen?
-Minden, ami nem illeszkedik ezen szigorú sablonok (Axiómák) egyikére sem, az **nem létezik a BioOS számára**. Ha a hacker kódja megpróbál egy `Date.now()`-t manipulálni, az nem része egyetlen engedélyezett átmenetnek sem, így nincs hatása a biztonsági állapotra.
+## 4. Konklúzió: A tervezési cél
+Minden, ami nem illeszkedik ezen szigorú sablonok (Axiómák) egyikére sem, az **nem létezik a BioOS számára**. Ha a hacker kódja megpróbál egy `Date.now()`-t manipulálni, az nem része egyetlen engedélyezett átmenetnek sem, így a terv szerint nincs hatása a biztonsági állapotra. Ez tervezési cél, nem bizonyított tulajdonság.
 
 ---
 
@@ -113,5 +113,5 @@ In this model, we do not state what is FORBIDDEN; instead, we **precisely descri
 
 ---
 
-## 4. Conclusion: Why will this be unhackable?
-Anything that does not fit into one of these strict templates (Axioms) **does not exist for BioOS**. If hacker code attempts to manipulate `Date.now()`, it is not part of any permitted transition and thus has no effect on the security state.
+## 4. Conclusion: The design goal
+Anything that does not fit into one of these strict templates (Axioms) **does not exist for BioOS**. If hacker code attempts to manipulate `Date.now()`, it is not part of any permitted transition and thus is designed to have no effect on the security state. This is a design goal, not a proven property.

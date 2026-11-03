@@ -1,5 +1,5 @@
 # CYBER GENESIS CHALLENGE: Architecture & Design
-**Project Goal:** A standalone web-based sandbox to demonstrate BioOS "100% Security" (Digital Causal Closure) by inviting users to exploit a vulnerable application.
+**Project Goal:** A standalone web-based sandbox to test the BioOS claim of Digital Causal Closure within a stated threat model, by inviting users to try to exploit a vulnerable application. Attacks outside that threat model (physical HID emulators, rootkits that bypass kernel filters) are out of scope.
 
 ---
 

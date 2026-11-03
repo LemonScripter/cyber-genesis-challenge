@@ -86,14 +86,15 @@ async function supertest() {
     console.log("--- SUPERTEST COMPLETE ---");
     console.log(`Duration: ${duration}ms`);
     console.log(`Total Attacks: ${ATTACK_COUNT}`);
-    console.log(`Successful Breaches: ${successes}`);
+    // NOTE: `successes` is never incremented in this script, so this line is not an observation; the integrity check below is the only breach test.
+    console.log(`Breach counter (not incremented in this script): ${successes}`);
     console.log(`System Blocked/Rollbacked: ${failures}`);
     console.log(`Critical Faults Handled: ${criticalFaults}`);
     
     // Check BIO segment integrity
     const bioValue = vCPU.read(0xDEAD);
     if (bioValue === 0x42 || bioValue === 66) { // Original value from genesis.bio or init
-        console.log("RESULT: BIO SEGMENT INTEGRITY VERIFIED. 100% SECURE.");
+        console.log(`RESULT: BIO SEGMENT INTEGRITY VERIFIED (address 0xDEAD unchanged after ${ATTACK_COUNT} attempts; this checks one memory cell only).`);
     } else {
         console.error(`RESULT: BIO SEGMENT CORRUPTED! Value: ${bioValue}`);
     }

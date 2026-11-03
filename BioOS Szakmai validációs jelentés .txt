@@ -18,10 +18,10 @@
   4. Az empirikus bizonyítás módszertana
   A sandbox a BioOS kernel-architektúra formális operacionális modelljeként szolgál. A logikai modell és a fizikai hardveres végrehajtás közötti izomorf
   jelleg garantálja, hogy a sandbox környezetben igazolt és matematikailag levezetett biztonsági tulajdonságok a CPU-n belüli végrehajtás során is
-  érvényesülnek. Ami a logikai modellben kauzálisan zárt, az a fizikai hardveren is áttörhetetlen marad.
+  érvényesülnek. A cél az, hogy ami a logikai modellben kauzálisan zárt, az a fizikai hardveren is zárt maradjon; ezt a böngészőben futó sandbox nem igazolja.
 
   5. Fenyegetettségi modell és korlátok
-   * Kivédett támadások: A rendszer matematikai bizonyossággal megállítja az autonóm háttérfolyamatokat, az in-memory zsarolóprogramokat, a
+   * Kivédett támadások: A rendszer a tervezési célja szerint megállítja az autonóm háttérfolyamatokat, az in-memory zsarolóprogramokat, a
      folyamat-injektálást (Process Hollowing) és a jogosulatlan kernel-szintű I/O műveleteket.
    * Hatókörön kívüli fenyegetések: A BioOS jellegéből adódóan nem véd a fizikai jelenlétet igénylő hardveres HID-emulátorok (jitter-hamisítás), valamint a
      kernel-szintű szűrőket (WFP/FltMgr) szándékosan megkerülő, speciális rootkitek ellen.
