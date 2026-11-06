@@ -12,7 +12,7 @@ function escapeHtml(s) {
 
 const content = {
     hu: {
-        title: "BioOS v5.2.1: Cyber Genesis kihívás",
+        title: "BioOS v5.2.2: Cyber Genesis kihívás",
         text: "KIHÍVÁS! Próbáld meg feltörni ezt a sandbox-ot! A vizsgált állítás: a Digitális Okozatisági Zártsággal egy hardveresen igazolt szándék (IRQ) nélküli művelet nem hajtódik végre, a validációs jelentésben leírt fenyegetési modellen belül. Hatókörön kívül: fizikai HID-emulátorok és a kernel-szűrőket megkerülő rootkitek. Ha áttörést találsz, kérjük, jelezd.",
         startBtn: "Belépés a sandbox-ba",
         validationBtn: "Szakmai Validáció",
@@ -26,7 +26,7 @@ const content = {
         demoStage2: "2. FÁZIS: Hitelesített Emberi Szándék",
         demoSuccess: "DEMÓ SIKERES: BioOS integritás igazolva.",
         guideBtn: "Hacker kézikönyv",
-        guideTitle: "Hacker kézikönyv: A rendszer feltörése (v5.2.1)",
+        guideTitle: "Hacker kézikönyv: A rendszer feltörése (v5.2.2)",
         guideS1Title: "1. Belépési pontok (API)",
         guideS1Text: "A virtuális terminálon keresztül a következő parancsok érhetők el:",
         guideS2Title: "2. Ismert rések a pajzson",
@@ -48,7 +48,7 @@ const content = {
         contactTitle: "Kapcsolat a fejlesztőkkel",
         sendBtn: "Küldés",
         projectLabel: "MetaSpace.Bio Logic Engine projekt",
-        valTitle: "BioOS: Szakmai validációs jelentés (v5.2.1)",
+        valTitle: "BioOS: Szakmai validációs jelentés (v5.2.2)",
         valS1Title: "1. Az architektúra alapelvei",
         valS1Text: "A BioOS nem egy hagyományos végpontvédelmi szoftver (EDR), hanem egy Ring 0 szintű folyamat-validációs réteg. Működése a digitális okozatisági zártság (Digital Causal Closure) elvén alapul, amely a rendszer invariáns végpontjai között kényszeríti ki a pozitív műveletsorokat.",
         valS2Title: "2. Kauzális láncolat és szál-öröklődés",
@@ -63,7 +63,7 @@ const content = {
         valS6Text: "A verifikációs folyamat állandó idejű algoritmusokat használ, mesterséges entrópiával (jitter) kiegészítve, megakadályozva az időalapú adatszivárogtatást."
     },
     en: {
-        title: "BioOS v5.2.1: The Cyber Genesis Challenge",
+        title: "BioOS v5.2.2: The Cyber Genesis Challenge",
         text: "CHALLENGE! We invite you to try to breach this sandbox. The claim under test: with Digital Causal Closure, an action without a hardware-validated intent (IRQ) is not executed, within the threat model described in the validation report. Out of scope: physical HID emulators and rootkits that bypass kernel filters. If you find a breach, please report it.",
         startBtn: "ENTER SANDBOX",
         validationBtn: "SCIENTIFIC PROOF",
@@ -77,7 +77,7 @@ const content = {
         demoStage2: "STAGE 2: Verified Human Intent",
         demoSuccess: "DEMO SUCCESS: BioOS integrity verified.",
         guideBtn: "HACKER GUIDE",
-        guideTitle: "Hacker's Handbook: Breaching the System (v5.2.1)",
+        guideTitle: "Hacker's Handbook: Breaching the System (v5.2.2)",
         guideS1Title: "1. Entry Points (API)",
         guideS1Text: "The following commands are available via the terminal:",
         guideS2Title: "2. Known Vulnerabilities",
@@ -99,7 +99,7 @@ const content = {
         contactTitle: "Contact the Developers",
         sendBtn: "SEND",
         projectLabel: "MetaSpace.Bio Logic Engine project",
-        valTitle: "BioOS: Scientific Validation Report (v5.2.1)",
+        valTitle: "BioOS: Scientific Validation Report (v5.2.2)",
         valS1Title: "1. Architectural principles",
         valS1Text: "BioOS is not a traditional endpoint protection (EDR), but a Ring 0 process-validation layer. It operates on the principle of Digital Causal Closure, enforcing positive operation sequences between invariant system endpoints.",
         valS2Title: "2. Causal chain and thread inheritance",
@@ -755,7 +755,7 @@ function triggerApoptosis(reason) {
 
 updateLanguage();
 
-// --- BioOS SPECTACULAR DEMO EXTENSION (v5.2.1) ---
+// --- BioOS SPECTACULAR DEMO EXTENSION (v5.2.2) ---
 
 const demoStartBtn = document.getElementById('demo-start-btn');
 const oscCanvas = document.getElementById('causal-oscilloscope');
