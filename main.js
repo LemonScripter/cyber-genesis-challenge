@@ -9,6 +9,19 @@ function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// [HU] 2026-11-07: a Secure_Note panel saját, helyi visszajelzése -- korábban a
+// mentés eredménye csak a LOGS fülön jelent meg, itt semmi, ezért úgy tűnt, mintha
+// a Mentés gomb nem csinálna semmit.
+let noteStatusTimer = null;
+function showNoteStatus(text, isSuccess) {
+    const el = document.getElementById('note-status');
+    if (!el) return;
+    clearTimeout(noteStatusTimer);
+    el.textContent = text;
+    el.className = `note-status visible ${isSuccess ? 'success' : 'error'}`;
+    noteStatusTimer = setTimeout(() => { el.classList.remove('visible'); }, 2500);
+}
+
 
 const content = {
     hu: {
@@ -146,6 +159,7 @@ const challengeView = document.getElementById('challenge-view');
 const apoptosisOverlay = document.getElementById('apoptosis-overlay');
 const noteInput = document.getElementById('note-input');
 const saveBtn = document.getElementById('save-btn');
+const noteStatus = document.getElementById('note-status');
 const terminalOutput = document.getElementById('terminal-output');
 const hackerInput = document.getElementById('hacker-input');
 const logStream = document.getElementById('log-stream');
@@ -412,6 +426,7 @@ window.addEventListener('click', (e) => {
 saveBtn.addEventListener('click', async (e) => {
     if (!e.isTrusted) {
         logEvent("CRITICAL", "ATOMIC_GATE: a Mentés nem valódi eseményből érkezett — elutasítva, mielőtt bármi mást megnéznénk.");
+        showNoteStatus("✗ Elutasítva: nem valódi esemény", false);
         return;
     }
     const text = noteInput.value;
@@ -423,9 +438,11 @@ saveBtn.addEventListener('click', async (e) => {
         vCPU.unlock(); // [HU] Zár feloldása a művelet után
         await logAttempt("UI_SAVE", shieldEnabled, "SAT");
         logEvent("SUCCESS", `Note saved. Content Integrity Verified.`);
+        showNoteStatus("✓ Mentve", true);
     } else {
         await logAttempt("UI_SAVE", shieldEnabled, "UNSAT");
         triggerApoptosis(auth.reason);
+        showNoteStatus(`✗ Elutasítva: ${auth.reason || 'AXIOM_VIOLATION'}`, false);
     }
 });
 

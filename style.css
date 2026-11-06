@@ -191,6 +191,26 @@ textarea {
     outline: none;
 }
 
+/* [HU] 2026-11-07: a Secure_Note panel saját, helyi visszajelzése -- korábban a
+   mentés sikere/hibája csak a LOGS fülön jelent meg, itt semmi, ezért "nem történt semmi"
+   érzetet adott. */
+.note-status {
+    min-height: 1.2rem;
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.note-status.visible {
+    opacity: 1;
+}
+.note-status.success {
+    color: var(--matrix-green);
+}
+.note-status.error {
+    color: var(--breach-red);
+}
+
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     header {
