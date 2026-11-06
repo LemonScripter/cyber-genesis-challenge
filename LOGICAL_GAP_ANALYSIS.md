@@ -34,6 +34,14 @@ Ez a megközelítés hibás, mert feltételezi, hogy ismerjük az összes rossz 
 
 ---
 
+### E) Oksági lánc újrafelhasználása (aktiválás-/jegy-lovaglás) — 2026-11-07
+- **Mi hiányzott?** A `CausalityMonitor` egyetlen, megosztott, utólag is lekérdezhető `lastToken`-t tartott fenn. Minden belépési pont (a terminál `keypress`-kezelője, a Mentés gomb `click`-kezelője) ezt az ÁLLAPOTOT kérdezte le, nem a SAJÁT, közvetlen kiváltó eseményét.
+- **Logikai hiba:** egy szintetikus (`dispatchEvent`-tel előállított) `keypress` a terminálba bejuthatott, és egy KORÁBBI, más célú, valódi fizikai eseményből (pl. egy `mousedown` a Mentés gombon, teljes kattintás nélkül) származó, még fel nem használt jegyet "lovagolt" — így egy nem szándékolt művelet (`NET_EXPORT`) `SAT`-ot kapott. Mérve, helyi tesztben: valódi mousedown a Mentésen + szintetikus `keypress` a terminálba → a rendszer kiadta a győzelmi/bizonyíték-kódot egy olyan műveletre, amit senki nem szándékozott.
+- **Megoldás (telepítve, 2026-11-07):** **atomi kapu** — minden belépési pont a SAJÁT, közvetlen kiváltó eseményének `isTrusted` jelzőjét nézi, szinkron módon, a handler legelső sorában, mielőtt bármi mást megnézne. Nem a Monitor megosztott állapotát kérdezi le. Ez megszünteti a "lovaglás" lehetőségét: egy szintetikus esemény, függetlenül attól, van-e érvényes jegy valahol máshol a lapon, fel sem dolgozódik.
+- **Mérve, regresszió nélkül:** legitim kattintás és legitim terminálgépelés változatlanul működik; a demonstrált lovagló-lánc blokkolva, már a feldolgozás előtt.
+- **Általánosítható tanulság (a szélesebb DCC/okozatiság-koncepcióhoz):** ha egy "oksági lánc" több, látszólag független elemből áll (cél-kötés, jelenlét, időablak), de ezek egy KÖZÖS, újra lekérdezhető állapotból (nem egymástól független, közvetlen forrásból) származnak, a lánc ereje egyetlen elemre csökken — egy támadó, aki csak EGY pontot ismer/irányít a folyamatban, mindkettőt (vagy többet) kielégítheti. A lánc minden elemét a SAJÁT, azonnali, nem megosztható forrásából kell igazolni.
+- **Hatókör, ami nyitva marad:** ez a javítás a lap-szintű (script-eredetű) hamisítást zárja. Az OS-szintű bemenet-szimulálás (`SendInput`, `xdotool`) elleni védelemhez `isTrusted` önmagában nem elég (az ilyen esemény is megbízhatónak látszik) — ehhez egy külön, hardveres csatorna (pl. WebAuthn-alapú fizikai jelenlét-igazolás) kellene, amit tervben és helyi, virtuális-hitelesítős teszttel igazoltunk, de ide (élesben) még nem építettünk be.
+
 ## 3. Az Új Paradigma: "Exhaustive Positive Modeling"
 
 Ebben a modellben nem azt mondjuk meg, mi TILOS, hanem **pontosan leírjuk az összes megengedett fizikai-digitális állapotátmenetet**:
