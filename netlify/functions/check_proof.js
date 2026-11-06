@@ -8,7 +8,9 @@ exports.handler = async (event, context) => {
   try {
     const { hash, fingerprint } = JSON.parse(event.body);
     const SECRET_SALT = process.env.BIOOS_VERIFY_SALT || "BIOOS_SECRET_SALT_2026_SECURE";
-    const key = "BioOS_TITAN_2026";
+    // [HU] 2026-11-07: ugyanaz a kulcs-forras, mint a get_proof.js-ben (REAL_KEY) --
+    // ha kesobb kornyezeti valtozobol jon, itt is ugyanabbol jojjon.
+    const key = process.env.BIOOS_SECRET_KEY || "BioOS_TITAN_2026";
     const data = "WIN_0xDEAD_" + key;
     
     // [HU] Ellenőrizzük mindkét állapotot (ON és OFF)

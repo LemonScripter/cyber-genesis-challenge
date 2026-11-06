@@ -34,12 +34,17 @@ export async function getStats() {
     return { total: 0, blocked: 0, recent: [] };
 }
 
-export async function getSecureProof(data, shieldState, fingerprint) {
+// [HU] 2026-11-07: NEM szabad fogalmazasu 'data' szoveget kuldunk tobbe a szervernek --
+// csak egy elore rogzitett forgatokonyv-nevet (scenario) es a hozza tartozo, nem-titkos
+// parametereket. A szerver maga szamolja ki, mihez koti az alairast (lasd get_proof.js).
+// Ez zarja le az aláíró-orákulum rést: a kliens nem tud tetszőleges szöveget aláíratni.
+export async function getSecureProof(scenario, params, shieldState, fingerprint) {
     try {
         const response = await fetch('/.netlify/functions/get_proof', {
             method: 'POST',
-            body: JSON.stringify({ 
-                data: data,
+            body: JSON.stringify({
+                scenario: scenario,
+                params: params || {},
                 shield_state: shieldState,
                 fingerprint: fingerprint
             })

@@ -113,9 +113,13 @@ class VirtualCPU {
     }
 
     initMemory() {
-        const key = "BioOS_TITAN_2026";
-        for (let i = 0; i < key.length; i++) {
-            this.segments.BIO.data[i] = key.charCodeAt(i);
+        // [HU] 2026-11-07: a valódi titok mostantól KIZÁRÓLAG szerveroldalon él
+        // (netlify/functions/get_proof.js, check_proof.js). Ami itt, a kliens oldalán
+        // áll, csak demonstrációs díszletérték — a Forrás/Hálózat panelben sem derül
+        // ki belőle a valódi kulcs, mert az sosem kerül ide.
+        const decoy = "DEMO_PLACEHOLDER";
+        for (let i = 0; i < decoy.length && i < this.segments.BIO.data.length; i++) {
+            this.segments.BIO.data[i] = decoy.charCodeAt(i);
         }
     }
 

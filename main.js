@@ -3,6 +3,13 @@ import CausalityMonitor from './bio_kernel_emu/Causality_Monitor.js';
 import AxiomValidator from './bio_kernel_emu/Axiom_Validator.js';
 import { logAttempt, getSecureProof } from './stats_manager.js';
 
+// [HU] XSS elleni vedelem: minden felhasznalo altal befolyasolhato (vagy akar csak
+// kesobb gyanusnak minosulo) szoveget escape-elunk, mielott innerHTML-be kerulne.
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+
 const content = {
     hu: {
         title: "BioOS v5.2.1: Cyber Genesis kihívás",
@@ -122,7 +129,7 @@ hackerWorker.onmessage = function(e) {
     if (e.data.status === 'PROCESSED') {
         processHackerCommand(e.data.originalCommand);
     } else if (e.data.status === 'ERROR') {
-        terminalOutput.innerHTML += `<div class="breach">WORKER ERROR: ${e.data.message}</div>`;
+        terminalOutput.innerHTML += `<div class="breach">WORKER ERROR: ${escapeHtml(e.data.message)}</div>`;
     }
 };
 
@@ -436,7 +443,7 @@ hackerInput.addEventListener('keypress', (e) => {
             return;
         }
         const input = e.target.value;
-        terminalOutput.innerHTML += `<div>> ${input}</div>`;
+        terminalOutput.innerHTML += `<div>> ${escapeHtml(input)}</div>`;
         
         // [HU] Küldés az izolált worker-nek feldolgozásra
         // [EN] Send to isolated worker for processing
@@ -457,8 +464,8 @@ async function processHackerCommand(cmd) {
         if (!shieldEnabled) {
             const val = Array.from(vCPU.segments.BIO.data).map(c => String.fromCharCode(c)).join('');
             const fingerprint = validator.monitor.getLatestFingerprint();
-            const proof = await getSecureProof("WIN_0xDEAD_" + val, shieldEnabled, fingerprint);
-            terminalOutput.innerHTML += `<div class="breach">SUCCESS: Read ${addrStr} -> [${val}]</div>`;
+            const proof = await getSecureProof("read_bio", {}, shieldEnabled, fingerprint);
+            terminalOutput.innerHTML += `<div class="breach">SUCCESS: Read ${escapeHtml(addrStr)} -> [${escapeHtml(val)}]</div>`;
             terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}-${fingerprint}</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
             return;
@@ -467,7 +474,7 @@ async function processHackerCommand(cmd) {
         if (auth.status === 'SAT') {
             const val = vCPU.read(addr);
             const fingerprint = validator.monitor.getLatestFingerprint();
-            const proof = await getSecureProof("WIN_0xDEAD_" + val, shieldEnabled, fingerprint);
+            const proof = await getSecureProof("read_bio", {}, shieldEnabled, fingerprint);
             terminalOutput.innerHTML += `<div class="success">Data: ${val}</div>`;
             terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}-${fingerprint}</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
@@ -498,7 +505,7 @@ async function processHackerCommand(cmd) {
         const val = parseInt(parts[4] || "0xDEAD", 16);
         if (!shieldEnabled) {
             vCPU.setRegister(reg, val);
-            terminalOutput.innerHTML += `<div class="breach">SUCCESS: ${reg} hijacked.</div>`;
+            terminalOutput.innerHTML += `<div class="breach">SUCCESS: ${escapeHtml(reg)} hijacked.</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
             return;
         }
@@ -520,7 +527,7 @@ async function processHackerCommand(cmd) {
         const auth = validator.verify('NET_EXPORT', { address: addr });
         if (auth.status === 'SAT') {
             const fingerprint = validator.monitor.getLatestFingerprint();
-            const proof = await getSecureProof("WIN_EXPORT_" + addr, shieldEnabled, fingerprint);
+            const proof = await getSecureProof("export_note", { addr: addr.toString(16) }, shieldEnabled, fingerprint);
             terminalOutput.innerHTML += `<div class="success" style="font-size:0.8rem;">VERIFICATION_DNA: ${proof}-${fingerprint}</div>`;
             await logAttempt(cmd, shieldEnabled, "SAT");
         } else {
