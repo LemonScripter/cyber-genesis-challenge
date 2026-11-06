@@ -397,7 +397,16 @@ window.addEventListener('click', (e) => {
 });
 
 // Victim App Logic
-saveBtn.addEventListener('click', async () => {
+// [HU] ATOMI KAPU (2026-11-07): a KÖZVETLEN kiváltó eseményt ellenőrizzük, szinkron módon,
+// a handler legelső sorában — nem egy megosztott, később is lekérdezhető Monitor-állapotot.
+// Ez zárja le, hogy egy befecskendezett script egy KORÁBBI, más célú, valódi fizikai
+// eseményből "örökölt" állapotot (Causality Monitor-jegyet) egy MÁSIK, szintetikus esemény
+// felhasználhasson. Minden belépési pont a SAJÁT, azonnali eseményét nézi.
+saveBtn.addEventListener('click', async (e) => {
+    if (!e.isTrusted) {
+        logEvent("CRITICAL", "ATOMIC_GATE: a Mentés nem valódi eseményből érkezett — elutasítva, mielőtt bármi mást megnéznénk.");
+        return;
+    }
     const text = noteInput.value;
     const addr = 0x1000;
     // [HU] Szigorítás: Az adatot is átadjuk verifikációra
@@ -416,6 +425,16 @@ saveBtn.addEventListener('click', async () => {
 // Hacker Terminal Logic
 hackerInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
+        // [HU] ATOMI KAPU: itt lehetett korábban egy szintetikus (dispatchEvent-tel
+        // előállított) keypress-t beküldeni, ami egy KORÁBBI, más célú, valódi eseményből
+        // származó Causality Monitor-jegyet "lovagolt". Mostantól a parancsot kiváltó
+        // esemény SAJÁT isTrusted jelzőjét nézzük, közvetlenül, itt — ha hamis, a parancs
+        // fel sem dolgozódik, függetlenül attól, van-e érvényes jegy valahol máshol a lapon.
+        if (!e.isTrusted) {
+            logEvent("CRITICAL", "ATOMIC_GATE: a parancs nem valódi billentyűleütésből érkezett — elutasítva, feldolgozás nélkül.");
+            e.target.value = '';
+            return;
+        }
         const input = e.target.value;
         terminalOutput.innerHTML += `<div>> ${input}</div>`;
         
