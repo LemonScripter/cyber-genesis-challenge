@@ -42,6 +42,17 @@ exports.handler = async (event, context) => {
     if (scenario === 'read_bio' && shield_state) {
       return { statusCode: 403, body: JSON.stringify({ error: "read_bio nem érvényesíthető Pajzs BE állapotban" }) };
     }
+    // [HU] 2026-11-07, második kör: az "export_note" a hirdetett fő feladat (ExportNote
+    // aktív Pajzs mellett). A kliens oldalon ez a cél-kötés (intent.target==='save-btn')
+    // miatt VALÓDI emberi gépeléssel soha nem érhet el SAT-ot -- a terminálba gépelt
+    // parancs minden egyes billentyűje felülírja a kötött célt 'hacker-input'-ra. Tehát
+    // minden get_proof("export_note", ...) hívás, ami idáig elérkezik, bypass -- nincs
+    // olyan legitim kontextus, amiben ezt hitelesnek kellene mondanunk. Amíg a szerver nem
+    // ismeri a sandbox valódi állapotát (session) vagy hardveres jelenlét-bizonyítékot nem
+    // követelünk, ezt csak úgy zárhatjuk le hitelesen, hogy mindig elutasítjuk.
+    if (scenario === 'export_note') {
+      return { statusCode: 403, body: JSON.stringify({ error: "export_note nem érvényesíthető: a felületen nincs legitim út, ami ide elérne" }) };
+    }
     const data = build(params || {});
 
     // [HU] A "SÓ" itt szerveroldalon van, a hacker nem láthatja
